@@ -70,8 +70,8 @@ describe('Login Router', () => {
     const { sut } = makeSut()
     const httpResquest = {
       body: {
-        email: 'any_email@email.com',
-        password: 'any_password'
+        email: 'invalid_email@email.com',
+        password: 'invalid_password'
       }
     }
     const httpResponse = sut.route(httpResquest)
