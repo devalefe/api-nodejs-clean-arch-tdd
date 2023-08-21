@@ -6,7 +6,8 @@
   "scripts": {
     "prepare": "husky install",
     "test": "jest --silent --colors --noStackTrace --passWithNoTests",
-    "test:unit": "npm test -- --watch --no-coverage",
+    "test:unit": "npm test -- --watch --no-coverage -c jest-unit.config.js",
+    "test:integration": "npm test -- --watch --no-coverage -c jest-integration.config.js",
     "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage"
   },
