@@ -7,7 +7,7 @@
     "prepare": "husky install",
     "test": "jest --watch --silent --colors --noStackTrace",
     "test:staged": "jest --passWithNoTests --findRelatedTests --silent --colors --noStackTrace",
-    "test:ci": "jest --coverage"
+    "test:ci": "jest --coverage --silent --colors --noStackTrace"
   },
   "standard": {
     "env": ["jest"]
