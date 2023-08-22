@@ -1,5 +1,5 @@
 const HttpResponse = require('../helpers/http-response')
-const { InvalidParamError, MissingParamError } = require('../errors')
+const { InvalidParamError, MissingParamError } = require('../../utils/errors')
 
 module.exports = class LoginRouter {
   constructor (authUseCase, emailValidator) {
