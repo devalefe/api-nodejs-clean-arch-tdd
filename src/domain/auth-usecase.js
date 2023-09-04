@@ -15,15 +15,12 @@ class AuthUseCase {
       throw new MissingParamError('password')
     }
     const user = await this.loadUserByEmailRepository.load(email)
-    if (!user) {
-      return null
+    const credentialsMatch = user && await this.encrypter.compare(password, user.password)
+    if (credentialsMatch) {
+      const accessToken = await this.tokenGenerator.generate(user.id)
+      return accessToken
     }
-    const passwordMatch = await this.encrypter.compare(password, user.password)
-    if (!passwordMatch) {
-      return null
-    }
-    const accessToken = await this.tokenGenerator.generate(user.id)
-    return accessToken
+    return null
   }
 }
 
