@@ -17,8 +17,10 @@ class AuthUseCase {
     if (!user) {
       return null
     }
-    await this.encrypter.compare(password, user.password)
-    return null
+    const passwordMatch = await this.encrypter.compare(password, user.password)
+    if (!passwordMatch) {
+      return null
+    }
   }
 }
 
