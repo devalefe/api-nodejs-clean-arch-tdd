@@ -3,6 +3,7 @@ const { MissingParamError } = require('../utils/errors')
 class AuthUseCase {
   constructor (props) {
     this.loadUserByEmailRepository = props?.loadUserByEmailRepository
+    this.updateAccessTokenRepository = props?.updateAccessTokenRepository
     this.tokenGenerator = props?.tokenGenerator
     this.encrypter = props?.encrypter
   }
@@ -18,6 +19,7 @@ class AuthUseCase {
     const credentialsMatch = user && await this.encrypter.compare(password, user.password)
     if (credentialsMatch) {
       const accessToken = await this.tokenGenerator.generate(user.id)
+      await this.updateAccessTokenRepository.update(user.id, accessToken)
       return accessToken
     }
     return null
