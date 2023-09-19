@@ -2,8 +2,9 @@
   "name": "api-nodejs-clean-arch-tdd",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main/index.js",
   "scripts": {
+    "start": "node src/main/index.js",
     "prepare": "husky install",
     "test": "jest --colors --noStackTrace --passWithNoTests",
     "test:unit": "npm test -- --watch --no-coverage -c jest-unit.config.js",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^4.13.0",
     "validator": "^13.11.0"
