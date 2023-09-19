@@ -1,6 +1,6 @@
-const { MongoClient } = require('mongodb')
+const MongoHelper = require('../helpers/mongo-connection-helper')
 const LoadUserByEmailRepository = require('./load-user-by-email-repository')
-let connection, db
+let db
 
 const makeSut = () => {
   const userModel = db.collection('users')
@@ -14,8 +14,8 @@ const makeSut = () => {
 
 describe('LoadUserByEmail Repository', () => {
   beforeAll(async () => {
-    connection = await MongoClient.connect(globalThis.__MONGO_URI__)
-    db = await connection.db(globalThis.__MONGO_DB_NAME__)
+    await MongoHelper.connect(globalThis.__MONGO_URI__, globalThis.__MONGO_DB_NAME__)
+    db = await MongoHelper.getDb()
   })
 
   beforeEach(async () => {
@@ -23,7 +23,7 @@ describe('LoadUserByEmail Repository', () => {
   })
 
   afterAll(async () => {
-    await connection.close()
+    await MongoHelper.disconnect()
   })
 
   test('Should return null if no user is found', async () => {
