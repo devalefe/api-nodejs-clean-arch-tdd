@@ -19,4 +19,15 @@ describe('App Setup', () => {
     expect(response.headers['access-control-allow-methods']).toBe('*')
     expect(response.headers['access-control-allow-headers']).toBe('*')
   })
+
+  test('Should enable JSON Parser', async () => {
+    app.post('/test_json', (req, res) => {
+      res.send(req.body)
+    })
+    await request(app)
+      .post('/test_json')
+      .send({ hello: 'world' })
+      .expect('content-type', /json/)
+      .expect({ hello: 'world' })
+  })
 })
