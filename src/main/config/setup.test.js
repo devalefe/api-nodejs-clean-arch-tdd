@@ -1,7 +1,12 @@
 const request = require('supertest')
-const app = require('./app')
 
 describe('App Setup', () => {
+  let app
+
+  beforeEach(() => {
+    jest.resetModules()
+    app = require('./app')
+  })
   test('Should disable x-powered-by header', async () => {
     app.get('/test_x-powered-by', (req, res) => {
       res.send()
@@ -40,12 +45,12 @@ describe('App Setup', () => {
   })
 
   test('Should return content-type as XML if required', async () => {
-    app.get('/test_content_type_xml', (req, res) => {
+    app.get('/test_content_type', (req, res) => {
       res.type('xml')
       res.send('')
     })
     await request(app)
-      .get('/test_content_type_xml')
+      .get('/test_content_type')
       .expect('content-type', /xml/)
   })
 })
