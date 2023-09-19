@@ -31,9 +31,17 @@ describe('UpdateAccessToken Repository', () => {
     await MongoHelper.disconnect()
   })
 
-  test('Should user access token with correct values', async () => {
+  const makeSut = () => {
     const userModel = db.collection('users')
     const sut = new UpdateAccessTokenRepository(userModel)
+    return {
+      userModel,
+      sut
+    }
+  }
+
+  test('Should user access token with correct values', async () => {
+    const { userModel, sut } = makeSut()
     const user = await userModel.insertOne({
       name: 'Any Name',
       email: 'valid_email@mail.com',
