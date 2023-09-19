@@ -8,5 +8,9 @@ module.exports = (app) => {
     res.set('access-control-allow-headers', '*')
     next()
   })
+  app.use((req, res, next) => {
+    res.type('json')
+    next()
+  })
   app.use(express.json())
 }

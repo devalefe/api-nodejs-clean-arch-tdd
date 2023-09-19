@@ -27,7 +27,15 @@ describe('App Setup', () => {
     await request(app)
       .post('/test_json')
       .send({ hello: 'world' })
-      .expect('content-type', /json/)
       .expect({ hello: 'world' })
+  })
+
+  test('Should return content-type as JSON', async () => {
+    app.get('/test_content_type', (req, res) => {
+      res.send()
+    })
+    await request(app)
+      .get('/test_content_type')
+      .expect('content-type', /json/)
   })
 })
