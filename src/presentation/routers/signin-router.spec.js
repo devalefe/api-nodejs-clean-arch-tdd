@@ -1,17 +1,17 @@
-const LoginRouter = require('./login-router')
+const SignInRouter = require('./signin-router')
 const { UnauthorizedError, ServerError } = require('../errors')
 const { MissingParamError, InvalidParamError } = require('../../utils/errors')
 
 const makeSut = () => {
-  const authUseCaseSpy = makeAuthUseCase()
+  const signInUseCaseSpy = makeSignInUseCase()
   const emailValidatorSpy = makeEmailValidator()
-  const sut = new LoginRouter({
-    authUseCase: authUseCaseSpy,
+  const sut = new SignInRouter({
+    signInUseCase: signInUseCaseSpy,
     emailValidator: emailValidatorSpy
   })
   return {
     sut,
-    authUseCaseSpy,
+    signInUseCaseSpy,
     emailValidatorSpy
   }
 }
@@ -38,30 +38,30 @@ const makeEmailValidatorWithError = () => {
   return new EmailValidatorSpy()
 }
 
-const makeAuthUseCase = () => {
-  class AuthUseCaseSpy {
+const makeSignInUseCase = () => {
+  class SignInUseCaseSpy {
     async auth (email, password) {
       this.email = email
       this.password = password
       return this.accessToken
     }
   }
-  const authUseCaseSpy = new AuthUseCaseSpy()
-  authUseCaseSpy.accessToken = 'valid_token'
-  return authUseCaseSpy
+  const signInUseCaseSpy = new SignInUseCaseSpy()
+  signInUseCaseSpy.accessToken = 'valid_token'
+  return signInUseCaseSpy
 }
 
-const makeAuthUseCaseWithError = () => {
-  class AuthUseCaseSpy {
+const makeSignInUseCaseWithError = () => {
+  class SignInUseCaseSpy {
     async auth () {
       throw new Error()
     }
   }
 
-  return new AuthUseCaseSpy()
+  return new SignInUseCaseSpy()
 }
 
-describe('Login Router', () => {
+describe('SignIn Router', () => {
   test('Should return 400 if no email is provided', async () => {
     const { sut } = makeSut()
     const httpResquest = {
@@ -100,8 +100,8 @@ describe('Login Router', () => {
     expect(httpResponse.body.message).toBe(new ServerError().message)
   })
 
-  test('Should call AuthUseCase with correct params', async () => {
-    const { sut, authUseCaseSpy } = makeSut()
+  test('Should call SignInUseCase with correct params', async () => {
+    const { sut, signInUseCaseSpy } = makeSut()
     const httpResquest = {
       body: {
         email: 'any_email@email.com',
@@ -109,13 +109,13 @@ describe('Login Router', () => {
       }
     }
     await sut.route(httpResquest)
-    expect(authUseCaseSpy.email).toBe(httpResquest.body.email)
-    expect(authUseCaseSpy.password).toBe(httpResquest.body.password)
+    expect(signInUseCaseSpy.email).toBe(httpResquest.body.email)
+    expect(signInUseCaseSpy.password).toBe(httpResquest.body.password)
   })
 
   test('Should return 401 if invalid credentials are provided', async () => {
-    const { sut, authUseCaseSpy } = makeSut()
-    authUseCaseSpy.accessToken = undefined
+    const { sut, signInUseCaseSpy } = makeSut()
+    signInUseCaseSpy.accessToken = undefined
     const httpResquest = {
       body: {
         email: 'invalid_email@email.com',
@@ -128,7 +128,7 @@ describe('Login Router', () => {
   })
 
   test('Should return 200 if valid credentials are provided', async () => {
-    const { sut, authUseCaseSpy } = makeSut()
+    const { sut, signInUseCaseSpy } = makeSut()
     const httpResquest = {
       body: {
         email: 'valid_email@email.com',
@@ -137,7 +137,7 @@ describe('Login Router', () => {
     }
     const httpResponse = await sut.route(httpResquest)
     expect(httpResponse.statusCode).toBe(200)
-    expect(httpResponse.body.accessToken).toEqual(authUseCaseSpy.accessToken)
+    expect(httpResponse.body.accessToken).toEqual(signInUseCaseSpy.accessToken)
   })
 
   test('Should return 400 if invalid email is provided', async () => {
@@ -168,17 +168,17 @@ describe('Login Router', () => {
 
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
-    const authUseCaseSpy = makeAuthUseCase()
+    const signInUseCaseSpy = makeSignInUseCase()
     const suts = [
-      new LoginRouter(),
-      new LoginRouter({
-        authUseCase: invalid
+      new SignInRouter(),
+      new SignInRouter({
+        signInUseCase: invalid
       }),
-      new LoginRouter({
-        authUseCase: authUseCaseSpy
+      new SignInRouter({
+        signInUseCase: signInUseCaseSpy
       }),
-      new LoginRouter({
-        authUseCase: authUseCaseSpy,
+      new SignInRouter({
+        signInUseCase: signInUseCaseSpy,
         emailValidator: invalid
       })
     ]
@@ -198,11 +198,11 @@ describe('Login Router', () => {
 
   test('Should throw if any dependency throws', async () => {
     const suts = [
-      new LoginRouter({
-        authUseCase: makeAuthUseCaseWithError()
+      new SignInRouter({
+        signInUseCase: makeSignInUseCaseWithError()
       }),
-      new LoginRouter({
-        authUseCase: makeAuthUseCase(),
+      new SignInRouter({
+        signInUseCase: makeSignInUseCase(),
         emailValidator: makeEmailValidatorWithError()
       })
     ]

@@ -1,5 +1,5 @@
 const { MissingParamError } = require('../utils/errors')
-const AuthUseCase = require('./auth-usecase')
+const SignInUseCase = require('./signin-usecase')
 
 const makeEncrypter = () => {
   class EncrypterSpy {
@@ -92,7 +92,7 @@ const makeSut = () => {
   const updateAccessTokenRepositorySpy = makeUpdateAccessTokenRepository()
   const encrypterSpy = makeEncrypter()
   const tokenGeneratorSpy = makeTokenGenerator()
-  const sut = new AuthUseCase({
+  const sut = new SignInUseCase({
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
     updateAccessTokenRepository: updateAccessTokenRepositorySpy,
     tokenGenerator: tokenGeneratorSpy,
@@ -173,27 +173,27 @@ describe('Auth UseCase', () => {
     const encrypter = makeEncrypter()
     const tokenGenerator = makeTokenGenerator()
     const suts = [
-      new AuthUseCase(),
-      new AuthUseCase({}),
-      new AuthUseCase({
+      new SignInUseCase(),
+      new SignInUseCase({}),
+      new SignInUseCase({
         loadUserByEmailRepository: invalid,
         encrypter: invalid,
         tokenGenerator: invalid,
         updateAccessTokenRepository: invalid
       }),
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository,
         encrypter: invalid,
         tokenGenerator: invalid,
         updateAccessTokenRepository: invalid
       }),
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository,
         encrypter,
         tokenGenerator: invalid,
         updateAccessTokenRepository: invalid
       }),
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository,
         encrypter,
         tokenGenerator,
@@ -212,19 +212,19 @@ describe('Auth UseCase', () => {
     const encrypter = makeEncrypter()
     const tokenGenerator = makeTokenGenerator()
     const suts = [
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
       }),
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository,
         encrypter: makeEncrypterWithError()
       }),
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository,
         encrypter,
         tokenGenerator: makeTokenGeneratorWithError()
       }),
-      new AuthUseCase({
+      new SignInUseCase({
         loadUserByEmailRepository,
         encrypter,
         tokenGenerator,
