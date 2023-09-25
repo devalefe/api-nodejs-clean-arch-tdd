@@ -9,11 +9,26 @@ const signUpForm = {
   password: 'TestUpperLower1'
 }
 
+class LoadUserByEmailRepositorySpy {
+  async load (email) {
+    this.email = email
+    return this.user
+  }
+}
+
 describe('SignUp UseCase', () => {
   test('Should throw if any field is missing', async () => {
     const sut = new SignUpUseCase()
-    signUpForm.firstName = undefined
-    const promise = sut.register(signUpForm)
+    const promise = sut.register({ ...signUpForm, firstName: undefined })
     await expect(promise).rejects.toThrow(new MissingParamError('Missing param: firstName'))
+  })
+
+  test('Should call LoadUserByEmailRepository with correct email', async () => {
+    const loadUserByEmailRepository = new LoadUserByEmailRepositorySpy()
+    const sut = new SignUpUseCase({
+      loadUserByEmailRepository
+    })
+    await sut.register(signUpForm)
+    expect(loadUserByEmailRepository.email).toBe(signUpForm.email)
   })
 })
