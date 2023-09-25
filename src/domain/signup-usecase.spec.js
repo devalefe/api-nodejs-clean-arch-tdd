@@ -13,10 +13,7 @@ const makeLoadUserByEmailRepository = () => {
   class LoadUserByEmailRepositorySpy {
     async load (email) {
       this.email = email
-
-      if (this.user.email === email) {
-        return this.user
-      }
+      return null
     }
   }
   const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
@@ -59,7 +56,7 @@ describe('SignUp UseCase', () => {
 
   test('Should throw if email already exists', async () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
-    loadUserByEmailRepositorySpy.user.email = signUpForm.email
+    jest.spyOn(loadUserByEmailRepositorySpy, 'load').mockReturnValueOnce(new Promise(resolve => resolve({ id: 'valide_id' })))
     const promise = sut.register(signUpForm)
     await expect(promise).rejects.toThrow(new InvalidParamError('Invalid param: email already in use'))
   })
