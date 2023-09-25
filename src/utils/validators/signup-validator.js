@@ -62,7 +62,7 @@ module.exports = class SignUpValidator {
         email,
         password
       }, {
-        // abortEarly: false,
+        abortEarly: false
       })
 
       return true
