@@ -16,18 +16,27 @@ class LoadUserByEmailRepositorySpy {
   }
 }
 
+const makeSut = () => {
+  const loadUserByEmailRepository = new LoadUserByEmailRepositorySpy()
+  const sut = new SignUpUseCase({
+    loadUserByEmailRepository
+  })
+
+  return {
+    sut,
+    loadUserByEmailRepository
+  }
+}
+
 describe('SignUp UseCase', () => {
   test('Should throw if any field is missing', async () => {
-    const sut = new SignUpUseCase()
+    const { sut } = makeSut()
     const promise = sut.register({ ...signUpForm, firstName: undefined })
     await expect(promise).rejects.toThrow(new MissingParamError('Missing param: firstName'))
   })
 
   test('Should call LoadUserByEmailRepository with correct email', async () => {
-    const loadUserByEmailRepository = new LoadUserByEmailRepositorySpy()
-    const sut = new SignUpUseCase({
-      loadUserByEmailRepository
-    })
+    const { sut, loadUserByEmailRepository } = makeSut()
     await sut.register(signUpForm)
     expect(loadUserByEmailRepository.email).toBe(signUpForm.email)
   })
