@@ -39,6 +39,12 @@ describe('SignUp UseCase', () => {
     await expect(promise).rejects.toThrow(new MissingParamError('Missing param: firstName'))
   })
 
+  test('Should throw if no LoadUserByEmailRepository is provided', async () => {
+    const sut = new SignUpUseCase()
+    const promise = sut.register(signUpForm)
+    await expect(promise).rejects.toThrow()
+  })
+
   test('Should call LoadUserByEmailRepository with correct email', async () => {
     const { sut, loadUserByEmailRepository } = makeSut()
     await sut.register(signUpForm)
