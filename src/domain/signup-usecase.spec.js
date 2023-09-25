@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../utils/errors')
+const { MissingParamError, InvalidParamError } = require('../utils/errors')
 const SignUpUseCase = require('./signup-usecase')
 
 const signUpForm = {
@@ -13,22 +13,28 @@ const makeLoadUserByEmailRepository = () => {
   class LoadUserByEmailRepositorySpy {
     async load (email) {
       this.email = email
-      return this.user
+
+      if (this.user.email === email) {
+        return this.user
+      }
     }
   }
-
-  return new LoadUserByEmailRepositorySpy()
+  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+  loadUserByEmailRepositorySpy.user = {
+    id: 'any_id'
+  }
+  return loadUserByEmailRepositorySpy
 }
 
 const makeSut = () => {
-  const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const sut = new SignUpUseCase({
-    loadUserByEmailRepository
+    loadUserByEmailRepository: loadUserByEmailRepositorySpy
   })
 
   return {
     sut,
-    loadUserByEmailRepository
+    loadUserByEmailRepositorySpy
   }
 }
 
@@ -46,8 +52,15 @@ describe('SignUp UseCase', () => {
   })
 
   test('Should call LoadUserByEmailRepository with correct email', async () => {
-    const { sut, loadUserByEmailRepository } = makeSut()
+    const { sut, loadUserByEmailRepositorySpy } = makeSut()
     await sut.register(signUpForm)
-    expect(loadUserByEmailRepository.email).toBe(signUpForm.email)
+    expect(loadUserByEmailRepositorySpy.email).toBe(signUpForm.email)
+  })
+
+  test('Should throw if email already exists', async () => {
+    const { sut, loadUserByEmailRepositorySpy } = makeSut()
+    loadUserByEmailRepositorySpy.user.email = signUpForm.email
+    const promise = sut.register(signUpForm)
+    await expect(promise).rejects.toThrow(new InvalidParamError('Invalid param: email already in use'))
   })
 })
