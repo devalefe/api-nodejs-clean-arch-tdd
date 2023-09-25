@@ -9,15 +9,19 @@ const signUpForm = {
   password: 'TestUpperLower1'
 }
 
-class LoadUserByEmailRepositorySpy {
-  async load (email) {
-    this.email = email
-    return this.user
+const makeLoadUserByEmailRepository = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      this.email = email
+      return this.user
+    }
   }
+
+  return new LoadUserByEmailRepositorySpy()
 }
 
 const makeSut = () => {
-  const loadUserByEmailRepository = new LoadUserByEmailRepositorySpy()
+  const loadUserByEmailRepository = makeLoadUserByEmailRepository()
   const sut = new SignUpUseCase({
     loadUserByEmailRepository
   })
