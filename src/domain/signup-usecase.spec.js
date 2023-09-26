@@ -76,11 +76,22 @@ const makeTokenGeneratorWithError = () => {
   return tokenGeneratorSpy
 }
 
+const makeUpdateAccessTokenRepository = () => {
+  class UpdateAccessTokenRepositorySpy {
+    async update (accountId, accessToken) {
+      this.accountId = accountId
+      this.accessToken = accessToken
+    }
+  }
+  return new UpdateAccessTokenRepositorySpy()
+}
+
 const makeCreateUserAccountRepository = () => {
   class CreateUserAccountRepositorySpy {
     async save (userData) {
       this.userData = userData
-      return Object.assign({}, userData, { id: this.id, password: undefined })
+      this.account = Object.assign({}, userData, { id: this.id, password: undefined })
+      return this.account
     }
   }
   const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
@@ -103,11 +114,13 @@ const makeSut = () => {
   const tokenGeneratorSpy = makeTokenGenerator()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const createUserAccountRepositorySpy = makeCreateUserAccountRepository()
+  const updateAccessTokenRepositorySpy = makeUpdateAccessTokenRepository()
   const sut = new SignUpUseCase({
     encrypter: encrypterSpy,
     tokenGenerator: tokenGeneratorSpy,
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
-    createUserAccountRepository: createUserAccountRepositorySpy
+    createUserAccountRepository: createUserAccountRepositorySpy,
+    updateAccessTokenRepository: updateAccessTokenRepositorySpy
   })
 
   return {
@@ -115,7 +128,8 @@ const makeSut = () => {
     encrypterSpy,
     tokenGeneratorSpy,
     loadUserByEmailRepositorySpy,
-    createUserAccountRepositorySpy
+    createUserAccountRepositorySpy,
+    updateAccessTokenRepositorySpy
   }
 }
 
@@ -157,6 +171,13 @@ describe('SignUp UseCase', () => {
     const { sut, createUserAccountRepositorySpy } = makeSut()
     await sut.register(userFormData)
     expect(createUserAccountRepositorySpy.userData).toEqual(Object.assign({}, userFormData, { password: 'hashed_password' }))
+  })
+
+  test('Should call UpdateAccessTokenRepository with correct values', async () => {
+    const { sut, createUserAccountRepositorySpy, updateAccessTokenRepositorySpy, tokenGeneratorSpy } = makeSut()
+    await sut.register(userFormData)
+    expect(updateAccessTokenRepositorySpy.accountId).toBe(createUserAccountRepositorySpy.account.id)
+    expect(updateAccessTokenRepositorySpy.accessToken).toBe(tokenGeneratorSpy.accessToken)
   })
 
   test('Should throw if email already exists', async () => {
