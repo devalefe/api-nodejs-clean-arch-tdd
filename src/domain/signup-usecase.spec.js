@@ -158,8 +158,9 @@ describe('SignUp UseCase', () => {
 
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
-    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
     const encrypter = makeEncrypter()
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const createUserAccountRepository = makeCreateUserAccountRepository()
     const suts = [
       new SignUpUseCase(),
       new SignUpUseCase({}),
@@ -167,13 +168,19 @@ describe('SignUp UseCase', () => {
         loadUserByEmailRepository: invalid
       }),
       new SignUpUseCase({
-        loadUserByEmailRepository,
-        encrypter: invalid
+        encrypter: invalid,
+        loadUserByEmailRepository
       }),
       new SignUpUseCase({
-        loadUserByEmailRepository,
         encrypter,
+        loadUserByEmailRepository,
         createUserAccountRepository: invalid
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator: invalid,
+        loadUserByEmailRepository,
+        createUserAccountRepository
       })
     ]
 
