@@ -76,12 +76,6 @@ describe('SignUp UseCase', () => {
     expect(sutSpy).toBeCalledWith(signUpForm)
   })
 
-  test('Should throw if no LoadUserByEmailRepository is provided', async () => {
-    const sut = new SignUpUseCase()
-    const promise = sut.register(signUpForm)
-    await expect(promise).rejects.toThrow()
-  })
-
   test('Should call LoadUserByEmailRepository with correct email', async () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
     await sut.register(signUpForm)
@@ -107,5 +101,27 @@ describe('SignUp UseCase', () => {
     })
     const promise = sut.register(signUpForm)
     await expect(promise).rejects.toThrow()
+  })
+
+  test('Should throw if invalid dependencies are provided', async () => {
+    const invalid = {}
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const suts = [
+      new SignUpUseCase(),
+      new SignUpUseCase({}),
+      new SignUpUseCase({
+        loadUserByEmailRepository: invalid,
+        encrypter: invalid
+      }),
+      new SignUpUseCase({
+        loadUserByEmailRepository,
+        encrypter: invalid
+      })
+    ]
+
+    for (const sut of suts) {
+      const promise = sut.register(signUpForm)
+      await expect(promise).rejects.toThrow()
+    }
   })
 })
