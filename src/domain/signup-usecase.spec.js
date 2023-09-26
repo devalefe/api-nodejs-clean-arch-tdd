@@ -53,6 +53,13 @@ describe('SignUp UseCase', () => {
     }
   })
 
+  test('Should call SignUpUseCase.register with correct values', async () => {
+    const { sut } = makeSut()
+    const sutSpy = jest.spyOn(sut, 'register')
+    await sut.register(signUpForm)
+    expect(sutSpy).toBeCalledWith(signUpForm)
+  })
+
   test('Should throw if no LoadUserByEmailRepository is provided', async () => {
     const sut = new SignUpUseCase()
     const promise = sut.register(signUpForm)
