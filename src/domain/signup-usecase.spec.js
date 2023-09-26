@@ -65,6 +65,16 @@ const makeTokenGenerator = () => {
   return tokenGeneratorSpy
 }
 
+const makeTokenGeneratorWithError = () => {
+  class TokenGeneratorSpy {
+    async generate (accountId) {
+      throw new Error()
+    }
+  }
+  const tokenGeneratorSpy = new TokenGeneratorSpy()
+  return tokenGeneratorSpy
+}
+
 const makeCreateUserAccountRepository = () => {
   class CreateUserAccountRepositorySpy {
     async save (userData) {
@@ -191,8 +201,9 @@ describe('SignUp UseCase', () => {
   })
 
   test('Should throw if any dependency throws', async () => {
-    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
     const encrypter = makeEncrypter()
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const createUserAccountRepository = makeCreateUserAccountRepository()
     const suts = [
       new SignUpUseCase({
         loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
@@ -202,9 +213,15 @@ describe('SignUp UseCase', () => {
         encrypter: makeEncrypterWithError()
       }),
       new SignUpUseCase({
-        loadUserByEmailRepository,
         encrypter,
+        loadUserByEmailRepository,
         createUserAccountRepository: makeCreateUserAccountRepositoryWithError()
+      }),
+      new SignUpUseCase({
+        encrypter,
+        loadUserByEmailRepository,
+        createUserAccountRepository,
+        tokenGenerator: makeTokenGeneratorWithError()
       })
     ]
 
