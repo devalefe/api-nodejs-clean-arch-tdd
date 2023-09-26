@@ -32,15 +32,31 @@ const makeLoadUserByEmailRepositoryWithError = () => {
   return new LoadUserByEmailRepositorySpy()
 }
 
+const makeEncrypter = () => {
+  class EncrypterSpy {
+    async hash (password, salt) {
+      this.password = password
+      this.salt = salt
+      return this.hashedPassword
+    }
+  }
+  const encrypterSpy = new EncrypterSpy()
+  encrypterSpy.hashedPassword = 'hashed_password'
+  return encrypterSpy
+}
+
 const makeSut = () => {
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
+  const encrypterSpy = makeEncrypter()
   const sut = new SignUpUseCase({
-    loadUserByEmailRepository: loadUserByEmailRepositorySpy
+    loadUserByEmailRepository: loadUserByEmailRepositorySpy,
+    encrypter: encrypterSpy
   })
 
   return {
     sut,
-    loadUserByEmailRepositorySpy
+    loadUserByEmailRepositorySpy,
+    encrypterSpy
   }
 }
 
@@ -70,6 +86,12 @@ describe('SignUp UseCase', () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
     await sut.register(signUpForm)
     expect(loadUserByEmailRepositorySpy.email).toBe(signUpForm.email)
+  })
+
+  test('Should call Encrypter with correct password', async () => {
+    const { sut, encrypterSpy } = makeSut()
+    await sut.register(signUpForm)
+    expect(encrypterSpy.password).toBe(signUpForm.password)
   })
 
   test('Should throw if email already exists', async () => {
