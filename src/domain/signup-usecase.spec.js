@@ -1,7 +1,7 @@
 const { MissingParamError, InvalidParamError } = require('../utils/errors')
 const SignUpUseCase = require('./signup-usecase')
 
-const signUpForm = {
+const userFormData = {
   firstName: 'John',
   lastName: 'Doe',
   phone: '+55 00 0000-0000',
@@ -122,8 +122,8 @@ const makeSut = () => {
 describe('SignUp UseCase', () => {
   test('Should throw if any field is missing', async () => {
     const { sut } = makeSut()
-    for (const field of Object.keys(signUpForm)) {
-      const promise = sut.register({ ...signUpForm, [field]: undefined })
+    for (const field of Object.keys(userFormData)) {
+      const promise = sut.register({ ...userFormData, [field]: undefined })
       await expect(promise).rejects.toThrow(new MissingParamError(`Missing param: ${field}`))
     }
   })
@@ -131,44 +131,44 @@ describe('SignUp UseCase', () => {
   test('Should call SignUpUseCase.register with correct values', async () => {
     const { sut } = makeSut()
     const sutSpy = jest.spyOn(sut, 'register')
-    await sut.register(signUpForm)
-    expect(sutSpy).toBeCalledWith(signUpForm)
+    await sut.register(userFormData)
+    expect(sutSpy).toBeCalledWith(userFormData)
   })
 
   test('Should call LoadUserByEmailRepository with correct email', async () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
-    await sut.register(signUpForm)
-    expect(loadUserByEmailRepositorySpy.email).toBe(signUpForm.email)
+    await sut.register(userFormData)
+    expect(loadUserByEmailRepositorySpy.email).toBe(userFormData.email)
   })
 
   test('Should call Encrypter with correct password', async () => {
     const { sut, encrypterSpy } = makeSut()
-    await sut.register(signUpForm)
-    expect(encrypterSpy.password).toBe(signUpForm.password)
+    await sut.register(userFormData)
+    expect(encrypterSpy.password).toBe(userFormData.password)
   })
 
   test('Should call TokenGenerator with correct value', async () => {
     const { sut, tokenGeneratorSpy, createUserAccountRepositorySpy } = makeSut()
-    await sut.register(signUpForm)
+    await sut.register(userFormData)
     expect(tokenGeneratorSpy.accountId).toBe(createUserAccountRepositorySpy.id)
   })
 
   test('Should call CreateUserAccountRepository with correct values', async () => {
     const { sut, createUserAccountRepositorySpy } = makeSut()
-    await sut.register(signUpForm)
-    expect(createUserAccountRepositorySpy.userData).toEqual(Object.assign({}, signUpForm, { password: 'hashed_password' }))
+    await sut.register(userFormData)
+    expect(createUserAccountRepositorySpy.userData).toEqual(Object.assign({}, userFormData, { password: 'hashed_password' }))
   })
 
   test('Should throw if email already exists', async () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
     jest.spyOn(loadUserByEmailRepositorySpy, 'load').mockReturnValueOnce(new Promise(resolve => resolve({ id: 'valide_id' })))
-    const promise = sut.register(signUpForm)
+    const promise = sut.register(userFormData)
     await expect(promise).rejects.toThrow(new InvalidParamError('Invalid param: email already in use'))
   })
 
   test('Should returns an accessToken if user is registered successfuly', async () => {
     const { sut, tokenGeneratorSpy } = makeSut()
-    const accessToken = await sut.register(signUpForm)
+    const accessToken = await sut.register(userFormData)
     expect(accessToken).toBeTruthy()
     expect(accessToken).toBe(tokenGeneratorSpy.accessToken)
   })
@@ -202,7 +202,7 @@ describe('SignUp UseCase', () => {
     ]
 
     for (const sut of suts) {
-      const promise = sut.register(signUpForm)
+      const promise = sut.register(userFormData)
       await expect(promise).rejects.toThrow()
     }
   })
@@ -233,7 +233,7 @@ describe('SignUp UseCase', () => {
     ]
 
     for (const sut of suts) {
-      const promise = sut.register(signUpForm)
+      const promise = sut.register(userFormData)
       await expect(promise).rejects.toThrow()
     }
   })
