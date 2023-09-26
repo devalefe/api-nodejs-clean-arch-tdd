@@ -54,18 +54,32 @@ const makeEncrypterWithError = () => {
   return new EncrypterSpy()
 }
 
+const makeCreateUserAccountRepository = () => {
+  class CreateUserAccountRepositorySpy {
+    async save (userData) {
+      this.userData = userData
+      return true
+    }
+  }
+  const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
+  return createUserAccountRepositorySpy
+}
+
 const makeSut = () => {
-  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const encrypterSpy = makeEncrypter()
+  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
+  const createUserAccountRepositorySpy = makeCreateUserAccountRepository()
   const sut = new SignUpUseCase({
+    encrypter: encrypterSpy,
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
-    encrypter: encrypterSpy
+    createUserAccountRepository: createUserAccountRepositorySpy
   })
 
   return {
     sut,
+    encrypterSpy,
     loadUserByEmailRepositorySpy,
-    encrypterSpy
+    createUserAccountRepositorySpy
   }
 }
 
@@ -95,6 +109,12 @@ describe('SignUp UseCase', () => {
     const { sut, encrypterSpy } = makeSut()
     await sut.register(signUpForm)
     expect(encrypterSpy.password).toBe(signUpForm.password)
+  })
+
+  test('Should call CreateUserAccountRepository with correct values', async () => {
+    const { sut, createUserAccountRepositorySpy } = makeSut()
+    await sut.register(signUpForm)
+    expect(createUserAccountRepositorySpy.userData).toEqual(Object.assign({}, signUpForm, { password: 'hashed_password' }))
   })
 
   test('Should throw if email already exists', async () => {
