@@ -5,13 +5,13 @@ module.exports = class SignUpUseCase {
     encrypter,
     tokenGenerator,
     loadUserByEmailRepository,
-    createUserAccountRepository,
+    createAccountRepository,
     updateAccessTokenRepository
   } = {}) {
     this.encrypter = encrypter
     this.tokenGenerator = tokenGenerator
     this.loadUserByEmailRepository = loadUserByEmailRepository
-    this.createUserAccountRepository = createUserAccountRepository
+    this.createAccountRepository = createAccountRepository
     this.updateAccessTokenRepository = updateAccessTokenRepository
   }
 
@@ -25,7 +25,7 @@ module.exports = class SignUpUseCase {
     const accountExists = await this.loadUserByEmailRepository.load(userData.email)
     if (!accountExists) {
       const hashedPassword = await this.encrypter.hash(userData.password)
-      const account = await this.createUserAccountRepository.save(
+      const account = await this.createAccountRepository.save(
         Object.assign({}, userData, { password: hashedPassword })
       )
       const accessToken = await this.tokenGenerator.generate(account.id)

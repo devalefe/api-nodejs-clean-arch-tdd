@@ -76,27 +76,27 @@ const makeLoadUserByEmailRepositoryWithError = () => {
   return new LoadUserByEmailRepositorySpy()
 }
 
-const makeCreateUserAccountRepository = () => {
-  class CreateUserAccountRepositorySpy {
+const makeCreateAccountRepository = () => {
+  class CreateAccountRepositorySpy {
     async save (userData) {
       this.userData = userData
       this.account = Object.assign({}, userData, { id: this.id, password: undefined })
       return this.account
     }
   }
-  const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
-  createUserAccountRepositorySpy.id = 'valid_id'
-  return createUserAccountRepositorySpy
+  const createAccountRepositorySpy = new CreateAccountRepositorySpy()
+  createAccountRepositorySpy.id = 'valid_id'
+  return createAccountRepositorySpy
 }
 
-const makeCreateUserAccountRepositoryWithError = () => {
-  class CreateUserAccountRepositorySpy {
+const makeCreateAccountRepositoryWithError = () => {
+  class CreateAccountRepositorySpy {
     async save (userData) {
       throw new Error()
     }
   }
-  const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
-  return createUserAccountRepositorySpy
+  const createAccountRepositorySpy = new CreateAccountRepositorySpy()
+  return createAccountRepositorySpy
 }
 
 const makeUpdateAccessTokenRepository = () => {
@@ -122,13 +122,13 @@ const makeSut = () => {
   const encrypterSpy = makeEncrypter()
   const tokenGeneratorSpy = makeTokenGenerator()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-  const createUserAccountRepositorySpy = makeCreateUserAccountRepository()
+  const createAccountRepositorySpy = makeCreateAccountRepository()
   const updateAccessTokenRepositorySpy = makeUpdateAccessTokenRepository()
   const sut = new SignUpUseCase({
     encrypter: encrypterSpy,
     tokenGenerator: tokenGeneratorSpy,
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
-    createUserAccountRepository: createUserAccountRepositorySpy,
+    createAccountRepository: createAccountRepositorySpy,
     updateAccessTokenRepository: updateAccessTokenRepositorySpy
   })
 
@@ -137,7 +137,7 @@ const makeSut = () => {
     encrypterSpy,
     tokenGeneratorSpy,
     loadUserByEmailRepositorySpy,
-    createUserAccountRepositorySpy,
+    createAccountRepositorySpy,
     updateAccessTokenRepositorySpy
   }
 }
@@ -171,21 +171,21 @@ describe('SignUp UseCase', () => {
   })
 
   test('Should call TokenGenerator with correct value', async () => {
-    const { sut, tokenGeneratorSpy, createUserAccountRepositorySpy } = makeSut()
+    const { sut, tokenGeneratorSpy, createAccountRepositorySpy } = makeSut()
     await sut.register(userFormData)
-    expect(tokenGeneratorSpy.accountId).toBe(createUserAccountRepositorySpy.id)
+    expect(tokenGeneratorSpy.accountId).toBe(createAccountRepositorySpy.id)
   })
 
-  test('Should call CreateUserAccountRepository with correct values', async () => {
-    const { sut, createUserAccountRepositorySpy } = makeSut()
+  test('Should call CreateAccountRepository with correct values', async () => {
+    const { sut, createAccountRepositorySpy } = makeSut()
     await sut.register(userFormData)
-    expect(createUserAccountRepositorySpy.userData).toEqual(Object.assign({}, userFormData, { password: 'hashed_password' }))
+    expect(createAccountRepositorySpy.userData).toEqual(Object.assign({}, userFormData, { password: 'hashed_password' }))
   })
 
   test('Should call UpdateAccessTokenRepository with correct values', async () => {
-    const { sut, createUserAccountRepositorySpy, updateAccessTokenRepositorySpy, tokenGeneratorSpy } = makeSut()
+    const { sut, createAccountRepositorySpy, updateAccessTokenRepositorySpy, tokenGeneratorSpy } = makeSut()
     await sut.register(userFormData)
-    expect(updateAccessTokenRepositorySpy.accountId).toBe(createUserAccountRepositorySpy.account.id)
+    expect(updateAccessTokenRepositorySpy.accountId).toBe(createAccountRepositorySpy.account.id)
     expect(updateAccessTokenRepositorySpy.accessToken).toBe(tokenGeneratorSpy.accessToken)
   })
 
@@ -209,8 +209,8 @@ describe('SignUp UseCase', () => {
     const encrypter = makeEncrypter()
     const tokenGenerator = makeTokenGenerator()
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
-    const createUserAccountRepository = makeCreateUserAccountRepository()
-    const updateAccessTokenRepository = makeCreateUserAccountRepository()
+    const createAccountRepository = makeCreateAccountRepository()
+    const updateAccessTokenRepository = makeCreateAccountRepository()
     const suts = [
       new SignUpUseCase(),
       new SignUpUseCase({}),
@@ -218,35 +218,35 @@ describe('SignUp UseCase', () => {
         encrypter: invalid,
         tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator: invalid,
         loadUserByEmailRepository,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator,
         loadUserByEmailRepository: invalid,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository: invalid,
+        createAccountRepository: invalid,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository: invalid
       })
     ]
@@ -261,42 +261,42 @@ describe('SignUp UseCase', () => {
     const encrypter = makeEncrypter()
     const tokenGenerator = makeTokenGenerator()
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
-    const createUserAccountRepository = makeCreateUserAccountRepository()
-    const updateAccessTokenRepository = makeCreateUserAccountRepository()
+    const createAccountRepository = makeCreateAccountRepository()
+    const updateAccessTokenRepository = makeCreateAccountRepository()
     const suts = [
       new SignUpUseCase({
         encrypter: makeEncrypterWithError(),
         tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator: makeTokenGeneratorWithError(),
         loadUserByEmailRepository,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator,
         loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError(),
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository: makeCreateUserAccountRepositoryWithError(),
+        createAccountRepository: makeCreateAccountRepositoryWithError(),
         updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository,
+        createAccountRepository,
         updateAccessTokenRepository: makeUpdateAccessTokenRepositoryWithError()
       })
     ]
