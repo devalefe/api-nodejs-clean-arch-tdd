@@ -2,11 +2,13 @@ const { MissingParamError, InvalidParamError } = require('../utils/errors')
 
 module.exports = class SignUpUseCase {
   constructor ({
+    encrypter,
     loadUserByEmailRepository,
-    encrypter
+    createUserAccountRepository
   } = {}) {
-    this.loadUserByEmailRepository = loadUserByEmailRepository
     this.encrypter = encrypter
+    this.loadUserByEmailRepository = loadUserByEmailRepository
+    this.createUserAccountRepository = createUserAccountRepository
   }
 
   async register (props = {}) {
@@ -20,6 +22,7 @@ module.exports = class SignUpUseCase {
     if (emailAlreadyExists) {
       throw new InvalidParamError('Invalid param: email already in use')
     }
-    this.encrypter.hash(props.password)
+    const hashedPassword = await this.encrypter.hash(props.password)
+    await this.createUserAccountRepository.save(Object.assign({}, props, { password: hashedPassword }))
   }
 }
