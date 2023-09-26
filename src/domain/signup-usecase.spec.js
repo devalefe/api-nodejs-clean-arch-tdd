@@ -62,6 +62,7 @@ const makeTokenGenerator = () => {
     }
   }
   const tokenGeneratorSpy = new TokenGeneratorSpy()
+  tokenGeneratorSpy.accessToken = 'valid_token'
   return tokenGeneratorSpy
 }
 
@@ -163,6 +164,13 @@ describe('SignUp UseCase', () => {
     jest.spyOn(loadUserByEmailRepositorySpy, 'load').mockReturnValueOnce(new Promise(resolve => resolve({ id: 'valide_id' })))
     const promise = sut.register(signUpForm)
     await expect(promise).rejects.toThrow(new InvalidParamError('Invalid param: email already in use'))
+  })
+
+  test('Should returns an accessToken if user is registered successfuly', async () => {
+    const { sut, tokenGeneratorSpy } = makeSut()
+    const accessToken = await sut.register(signUpForm)
+    expect(accessToken).toBeTruthy()
+    expect(accessToken).toBe(tokenGeneratorSpy.accessToken)
   })
 
   test('Should throw if invalid dependencies are provided', async () => {
