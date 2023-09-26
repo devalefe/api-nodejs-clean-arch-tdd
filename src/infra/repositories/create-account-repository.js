@@ -4,7 +4,7 @@ const MongoHelper = require('../helpers/mongo-connection-helper')
 module.exports = class CreateAccountRepository {
   async create (accountData) {
     if (!accountData) {
-      throw new MissingParamError('account')
+      throw new MissingParamError('accountData')
     }
     const userModel = await MongoHelper.getCollection('users')
     return await userModel.insertOne({
