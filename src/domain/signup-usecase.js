@@ -28,6 +28,7 @@ module.exports = class SignUpUseCase {
     const account = await this.createUserAccountRepository.save(
       Object.assign({}, userData, { password: hashedPassword })
     )
-    await this.tokenGenerator.generate(account.id)
+    const accessToken = await this.tokenGenerator.generate(account.id)
+    return accessToken
   }
 }
