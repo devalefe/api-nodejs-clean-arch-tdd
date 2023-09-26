@@ -45,6 +45,15 @@ const makeEncrypter = () => {
   return encrypterSpy
 }
 
+const makeEncrypterWithError = () => {
+  class EncrypterSpy {
+    async compare () {
+      throw new Error()
+    }
+  }
+  return new EncrypterSpy()
+}
+
 const makeSut = () => {
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const encrypterSpy = makeEncrypter()
@@ -95,14 +104,6 @@ describe('SignUp UseCase', () => {
     await expect(promise).rejects.toThrow(new InvalidParamError('Invalid param: email already in use'))
   })
 
-  test('Should throw if LoadUserByEmailRepository throws', async () => {
-    const sut = new SignUpUseCase({
-      loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
-    })
-    const promise = sut.register(signUpForm)
-    await expect(promise).rejects.toThrow()
-  })
-
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
@@ -116,6 +117,24 @@ describe('SignUp UseCase', () => {
       new SignUpUseCase({
         loadUserByEmailRepository,
         encrypter: invalid
+      })
+    ]
+
+    for (const sut of suts) {
+      const promise = sut.register(signUpForm)
+      await expect(promise).rejects.toThrow()
+    }
+  })
+
+  test('Should throw if any dependency throws', async () => {
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const suts = [
+      new SignUpUseCase({
+        loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
+      }),
+      new SignUpUseCase({
+        loadUserByEmailRepository,
+        encrypter: makeEncrypterWithError()
       })
     ]
 
