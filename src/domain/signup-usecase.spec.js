@@ -79,11 +79,11 @@ const makeCreateUserAccountRepository = () => {
   class CreateUserAccountRepositorySpy {
     async save (userData) {
       this.userData = userData
-      this.id = ''
       return Object.assign({}, userData, { id: this.id, password: undefined })
     }
   }
   const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
+  createUserAccountRepositorySpy.id = 'valid_id'
   return createUserAccountRepositorySpy
 }
 
@@ -148,7 +148,6 @@ describe('SignUp UseCase', () => {
 
   test('Should call TokenGenerator with correct value', async () => {
     const { sut, tokenGeneratorSpy, createUserAccountRepositorySpy } = makeSut()
-    createUserAccountRepositorySpy.id = 'valid_id'
     await sut.register(signUpForm)
     expect(tokenGeneratorSpy.accountId).toBe(createUserAccountRepositorySpy.id)
   })
