@@ -9,29 +9,6 @@ const userFormData = {
   password: 'TestUpperLower1'
 }
 
-const makeLoadUserByEmailRepository = () => {
-  class LoadUserByEmailRepositorySpy {
-    async load (email) {
-      this.email = email
-      return null
-    }
-  }
-  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
-  loadUserByEmailRepositorySpy.user = {
-    id: 'any_id'
-  }
-  return loadUserByEmailRepositorySpy
-}
-
-const makeLoadUserByEmailRepositoryWithError = () => {
-  class LoadUserByEmailRepositorySpy {
-    async load (email) {
-      throw new Error()
-    }
-  }
-  return new LoadUserByEmailRepositorySpy()
-}
-
 const makeEncrypter = () => {
   class EncrypterSpy {
     async hash (password, salt) {
@@ -76,14 +53,27 @@ const makeTokenGeneratorWithError = () => {
   return tokenGeneratorSpy
 }
 
-const makeUpdateAccessTokenRepository = () => {
-  class UpdateAccessTokenRepositorySpy {
-    async update (accountId, accessToken) {
-      this.accountId = accountId
-      this.accessToken = accessToken
+const makeLoadUserByEmailRepository = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      this.email = email
+      return null
     }
   }
-  return new UpdateAccessTokenRepositorySpy()
+  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+  loadUserByEmailRepositorySpy.user = {
+    id: 'any_id'
+  }
+  return loadUserByEmailRepositorySpy
+}
+
+const makeLoadUserByEmailRepositoryWithError = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      throw new Error()
+    }
+  }
+  return new LoadUserByEmailRepositorySpy()
 }
 
 const makeCreateUserAccountRepository = () => {
@@ -107,6 +97,25 @@ const makeCreateUserAccountRepositoryWithError = () => {
   }
   const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
   return createUserAccountRepositorySpy
+}
+
+const makeUpdateAccessTokenRepository = () => {
+  class UpdateAccessTokenRepositorySpy {
+    async update (accountId, accessToken) {
+      this.accountId = accountId
+      this.accessToken = accessToken
+    }
+  }
+  return new UpdateAccessTokenRepositorySpy()
+}
+
+const makeUpdateAccessTokenRepositoryWithError = () => {
+  class UpdateAccessTokenRepositorySpy {
+    async update (accountId, accessToken) {
+      throw new Error()
+    }
+  }
+  return new UpdateAccessTokenRepositorySpy()
 }
 
 const makeSut = () => {
@@ -249,26 +258,45 @@ describe('SignUp UseCase', () => {
 
   test('Should throw if any dependency throws', async () => {
     const encrypter = makeEncrypter()
+    const tokenGenerator = makeTokenGenerator()
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
     const createUserAccountRepository = makeCreateUserAccountRepository()
+    const updateAccessTokenRepository = makeCreateUserAccountRepository()
     const suts = [
       new SignUpUseCase({
-        loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
-      }),
-      new SignUpUseCase({
-        loadUserByEmailRepository,
-        encrypter: makeEncrypterWithError()
-      }),
-      new SignUpUseCase({
-        encrypter,
-        loadUserByEmailRepository,
-        createUserAccountRepository: makeCreateUserAccountRepositoryWithError()
-      }),
-      new SignUpUseCase({
-        encrypter,
+        encrypter: makeEncrypterWithError(),
+        tokenGenerator,
         loadUserByEmailRepository,
         createUserAccountRepository,
-        tokenGenerator: makeTokenGeneratorWithError()
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator: makeTokenGeneratorWithError(),
+        loadUserByEmailRepository,
+        createUserAccountRepository,
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator,
+        loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError(),
+        createUserAccountRepository,
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator,
+        loadUserByEmailRepository,
+        createUserAccountRepository: makeCreateUserAccountRepositoryWithError(),
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator,
+        loadUserByEmailRepository,
+        createUserAccountRepository,
+        updateAccessTokenRepository: makeUpdateAccessTokenRepositoryWithError()
       })
     ]
 
