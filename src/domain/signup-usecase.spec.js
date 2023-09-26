@@ -54,11 +54,23 @@ const makeEncrypterWithError = () => {
   return new EncrypterSpy()
 }
 
+const makeTokenGenerator = () => {
+  class TokenGeneratorSpy {
+    async generate (accountId) {
+      this.accountId = accountId
+      return this.accessToken
+    }
+  }
+  const tokenGeneratorSpy = new TokenGeneratorSpy()
+  return tokenGeneratorSpy
+}
+
 const makeCreateUserAccountRepository = () => {
   class CreateUserAccountRepositorySpy {
     async save (userData) {
       this.userData = userData
-      return true
+      this.id = ''
+      return Object.assign({}, userData, { id: this.id, password: undefined })
     }
   }
   const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
@@ -77,10 +89,12 @@ const makeCreateUserAccountRepositoryWithError = () => {
 
 const makeSut = () => {
   const encrypterSpy = makeEncrypter()
+  const tokenGeneratorSpy = makeTokenGenerator()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const createUserAccountRepositorySpy = makeCreateUserAccountRepository()
   const sut = new SignUpUseCase({
     encrypter: encrypterSpy,
+    tokenGenerator: tokenGeneratorSpy,
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
     createUserAccountRepository: createUserAccountRepositorySpy
   })
@@ -88,6 +102,7 @@ const makeSut = () => {
   return {
     sut,
     encrypterSpy,
+    tokenGeneratorSpy,
     loadUserByEmailRepositorySpy,
     createUserAccountRepositorySpy
   }
@@ -119,6 +134,13 @@ describe('SignUp UseCase', () => {
     const { sut, encrypterSpy } = makeSut()
     await sut.register(signUpForm)
     expect(encrypterSpy.password).toBe(signUpForm.password)
+  })
+
+  test('Should call TokenGenerator with correct value', async () => {
+    const { sut, tokenGeneratorSpy, createUserAccountRepositorySpy } = makeSut()
+    createUserAccountRepositorySpy.id = 'valid_id'
+    await sut.register(signUpForm)
+    expect(tokenGeneratorSpy.accountId).toBe(createUserAccountRepositorySpy.id)
   })
 
   test('Should call CreateUserAccountRepository with correct values', async () => {
