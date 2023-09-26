@@ -1,3 +1,4 @@
+const MissingParamError = require('../../utils/errors/missing-param-error')
 const CreateAccountRepository = require('./create-account-repository')
 const MongoHelper = require('../helpers/mongo-connection-helper')
 let userModel
@@ -34,5 +35,10 @@ describe('CreateAccount Repository', () => {
     const cretaedAccount = await userModel.findOne({ _id: insertedId })
     expect(insertedId).toBeTruthy()
     expect(cretaedAccount).toEqual(Object.assign({}, accountData, { _id: insertedId }))
+  })
+
+  test('Should throw if no params are provided', async () => {
+    const sut = makeSut()
+    expect(sut.create()).rejects.toThrow(new MissingParamError('accountData'))
   })
 })
