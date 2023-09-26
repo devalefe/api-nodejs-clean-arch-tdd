@@ -197,28 +197,47 @@ describe('SignUp UseCase', () => {
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
     const encrypter = makeEncrypter()
+    const tokenGenerator = makeTokenGenerator()
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
     const createUserAccountRepository = makeCreateUserAccountRepository()
+    const updateAccessTokenRepository = makeCreateUserAccountRepository()
     const suts = [
       new SignUpUseCase(),
       new SignUpUseCase({}),
       new SignUpUseCase({
-        loadUserByEmailRepository: invalid
-      }),
-      new SignUpUseCase({
         encrypter: invalid,
-        loadUserByEmailRepository
-      }),
-      new SignUpUseCase({
-        encrypter,
+        tokenGenerator,
         loadUserByEmailRepository,
-        createUserAccountRepository: invalid
+        createUserAccountRepository,
+        updateAccessTokenRepository
       }),
       new SignUpUseCase({
         encrypter,
         tokenGenerator: invalid,
         loadUserByEmailRepository,
-        createUserAccountRepository
+        createUserAccountRepository,
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator,
+        loadUserByEmailRepository: invalid,
+        createUserAccountRepository,
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator,
+        loadUserByEmailRepository,
+        createUserAccountRepository: invalid,
+        updateAccessTokenRepository
+      }),
+      new SignUpUseCase({
+        encrypter,
+        tokenGenerator,
+        loadUserByEmailRepository,
+        createUserAccountRepository,
+        updateAccessTokenRepository: invalid
       })
     ]
 
