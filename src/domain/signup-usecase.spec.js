@@ -65,6 +65,16 @@ const makeCreateUserAccountRepository = () => {
   return createUserAccountRepositorySpy
 }
 
+const makeCreateUserAccountRepositoryWithError = () => {
+  class CreateUserAccountRepositorySpy {
+    async save (userData) {
+      throw new Error()
+    }
+  }
+  const createUserAccountRepositorySpy = new CreateUserAccountRepositorySpy()
+  return createUserAccountRepositorySpy
+}
+
 const makeSut = () => {
   const encrypterSpy = makeEncrypter()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
@@ -153,6 +163,7 @@ describe('SignUp UseCase', () => {
 
   test('Should throw if any dependency throws', async () => {
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const encrypter = makeEncrypter()
     const suts = [
       new SignUpUseCase({
         loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
@@ -160,6 +171,11 @@ describe('SignUp UseCase', () => {
       new SignUpUseCase({
         loadUserByEmailRepository,
         encrypter: makeEncrypterWithError()
+      }),
+      new SignUpUseCase({
+        loadUserByEmailRepository,
+        encrypter,
+        createUserAccountRepository: makeCreateUserAccountRepositoryWithError()
       })
     ]
 
