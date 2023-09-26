@@ -5,12 +5,14 @@ module.exports = class SignUpUseCase {
     encrypter,
     tokenGenerator,
     loadUserByEmailRepository,
-    createUserAccountRepository
+    createUserAccountRepository,
+    updateAccessTokenRepository
   } = {}) {
     this.encrypter = encrypter
     this.tokenGenerator = tokenGenerator
     this.loadUserByEmailRepository = loadUserByEmailRepository
     this.createUserAccountRepository = createUserAccountRepository
+    this.updateAccessTokenRepository = updateAccessTokenRepository
   }
 
   async register (userData = {}) {
@@ -29,6 +31,7 @@ module.exports = class SignUpUseCase {
       Object.assign({}, userData, { password: hashedPassword })
     )
     const accessToken = await this.tokenGenerator.generate(account.id)
+    await this.updateAccessTokenRepository.update(account.id, accessToken)
     return accessToken
   }
 }
