@@ -47,8 +47,10 @@ const makeSut = () => {
 describe('SignUp UseCase', () => {
   test('Should throw if any field is missing', async () => {
     const { sut } = makeSut()
-    const promise = sut.register({ ...signUpForm, firstName: undefined })
-    await expect(promise).rejects.toThrow(new MissingParamError('Missing param: firstName'))
+    for (const field of Object.keys(signUpForm)) {
+      const promise = sut.register({ ...signUpForm, [field]: undefined })
+      await expect(promise).rejects.toThrow(new MissingParamError(`Missing param: ${field}`))
+    }
   })
 
   test('Should throw if no LoadUserByEmailRepository is provided', async () => {
