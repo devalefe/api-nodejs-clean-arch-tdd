@@ -23,6 +23,15 @@ const makeLoadUserByEmailRepository = () => {
   return loadUserByEmailRepositorySpy
 }
 
+const makeLoadUserByEmailRepositoryWithError = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      throw new Error()
+    }
+  }
+  return new LoadUserByEmailRepositorySpy()
+}
+
 const makeSut = () => {
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const sut = new SignUpUseCase({
@@ -59,5 +68,13 @@ describe('SignUp UseCase', () => {
     jest.spyOn(loadUserByEmailRepositorySpy, 'load').mockReturnValueOnce(new Promise(resolve => resolve({ id: 'valide_id' })))
     const promise = sut.register(signUpForm)
     await expect(promise).rejects.toThrow(new InvalidParamError('Invalid param: email already in use'))
+  })
+
+  test('Should throw if LoadUserByEmailRepository throws', async () => {
+    const sut = new SignUpUseCase({
+      loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
+    })
+    const promise = sut.register(signUpForm)
+    await expect(promise).rejects.toThrow()
   })
 })
