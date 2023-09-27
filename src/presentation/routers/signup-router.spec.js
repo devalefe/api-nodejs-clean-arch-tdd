@@ -5,9 +5,11 @@ const makeSignUpUseCase = () => {
   class SignUpUseCaseSpy {
     async register (accountData = {}) {
       this.accountData = accountData
+      return this.accessToken
     }
   }
   const signUpUseCaseSpy = new SignUpUseCaseSpy()
+  signUpUseCaseSpy.accessToken = 'valid_token'
   return signUpUseCaseSpy
 }
 
@@ -66,5 +68,15 @@ describe('SignUp Router', () => {
     }
     await sut.route(httpResquest)
     expect(signUpUseCaseSpy.accountData).toEqual(httpResquest.body)
+  })
+
+  test('Should return 200 if valid credentials are provided', async () => {
+    const { sut, signUpUseCaseSpy } = makeSut()
+    const httpResquest = {
+      body: signUpForm
+    }
+    const httpResponse = await sut.route(httpResquest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body.accessToken).toEqual(signUpUseCaseSpy.accessToken)
   })
 })
