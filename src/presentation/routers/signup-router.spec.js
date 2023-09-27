@@ -1,5 +1,12 @@
 const SignUpRouter = require('./signup-router')
 
+const makeSut = () => {
+  const sut = new SignUpRouter()
+  return {
+    sut
+  }
+}
+
 const signUpForm = {
   firstName: 'John',
   lastName: 'Doe',
@@ -11,7 +18,7 @@ const signUpForm = {
 
 describe('SignUp Router', () => {
   test('Should return 400 if no firstName is provided', async () => {
-    const sut = new SignUpRouter()
+    const { sut } = makeSut()
     const fields = Object.keys(signUpForm)
     for (const field of fields) {
       const httpRequest = {
