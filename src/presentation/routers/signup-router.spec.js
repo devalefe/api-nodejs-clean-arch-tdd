@@ -14,6 +14,16 @@ const makeSignUpUseCase = () => {
   return signUpUseCaseSpy
 }
 
+const makeSignUpUseCaseWithError = () => {
+  class SignUpUseCaseSpy {
+    async register (accountData = {}) {
+      throw new Error()
+    }
+  }
+  const signUpUseCaseSpy = new SignUpUseCaseSpy()
+  return signUpUseCaseSpy
+}
+
 const makeSut = () => {
   const signUpUseCaseSpy = makeSignUpUseCase()
   const sut = new SignUpRouter({
@@ -101,6 +111,24 @@ describe('SignUp Router', () => {
       new SignUpRouter(),
       new SignUpRouter({
         signUpUseCase: invalid
+      })
+    ]
+
+    for (const sut of suts) {
+      const httpResquest = {
+        body: signUpForm
+      }
+      const httpResponse = await sut.route(httpResquest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body.message).toBe(new ServerError().message)
+    }
+  })
+
+  test('Should return 500 if any dependency throws', async () => {
+    const suts = [
+      new SignUpRouter(),
+      new SignUpRouter({
+        signUpUseCase: makeSignUpUseCaseWithError()
       })
     ]
 
