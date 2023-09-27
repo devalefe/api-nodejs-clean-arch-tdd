@@ -5,7 +5,8 @@ const signUpForm = {
   lastName: 'Doe',
   phone: '+55 00 0000-0000',
   email: 'test@mail.com',
-  password: 'TestUpperLower1'
+  password: 'TestUpperLower1',
+  passwordConfirmation: 'TestUpperLower1'
 }
 
 describe('SignUp Router', () => {
