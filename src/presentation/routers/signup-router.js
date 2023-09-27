@@ -17,7 +17,10 @@ module.exports = class SignUpRouter {
           return HttpResponse.badRequest(new MissingParamError(`${field} is a required field`))
         }
       }
-      await this.signUpUseCase.register(accountData)
+      const accessToken = await this.signUpUseCase.register(accountData)
+      if (accessToken) {
+        return HttpResponse.ok({ accessToken })
+      }
     } catch (error) {
       return HttpResponse.serverError()
     }
