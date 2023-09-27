@@ -1,3 +1,4 @@
+const { InvalidParamError } = require('../../utils/errors')
 const { ServerError } = require('../errors')
 const SignUpRouter = require('./signup-router')
 
@@ -34,7 +35,7 @@ const signUpForm = {
 }
 
 describe('SignUp Router', () => {
-  test('Should return 400 if no firstName is provided', async () => {
+  test('Should return 400 if any field is not provided', async () => {
     const { sut } = makeSut()
     const fields = Object.keys(signUpForm)
     for (const field of fields) {
@@ -45,6 +46,20 @@ describe('SignUp Router', () => {
       expect(httpResponse.statusCode).toBe(400)
       expect(httpResponse.body.message).toBe(`${field} is a required field`)
     }
+  })
+
+  test('Should return 400 if email already exists', async () => {
+    const httpResquest = {
+      body: signUpForm
+    }
+    const { sut, signUpUseCaseSpy } = makeSut()
+    jest.spyOn(signUpUseCaseSpy, 'register')
+      .mockImplementation(() => {
+        throw new InvalidParamError(`${signUpForm.email} already exists`)
+      })
+    const httpResponse = await sut.route(httpResquest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body.message).toBe(`${signUpForm.email} already exists`)
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
