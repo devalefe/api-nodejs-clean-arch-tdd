@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../utils/errors')
+const { MissingParamError, InvalidParamError } = require('../utils/errors')
 const SignUpUseCase = require('./signup-usecase')
 
 const userFormData = {
@@ -189,12 +189,12 @@ describe('SignUp UseCase', () => {
     expect(updateAccessTokenRepositorySpy.accessToken).toBe(tokenGeneratorSpy.accessToken)
   })
 
-  test('Should return null if account already exists', async () => {
+  test('Should throw if account already exists', async () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
     jest.spyOn(loadUserByEmailRepositorySpy, 'load')
       .mockReturnValueOnce(new Promise(resolve => resolve({ id: 'valid_id' })))
-    const result = await sut.register(userFormData)
-    expect(result).toBeNull()
+    const promise = sut.register(userFormData)
+    expect(promise).rejects.toThrow(new InvalidParamError(`${userFormData.email} already exists`))
   })
 
   test('Should returns an accessToken if user is registered successfuly', async () => {

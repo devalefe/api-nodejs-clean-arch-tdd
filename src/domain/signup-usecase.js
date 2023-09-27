@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../utils/errors')
+const { MissingParamError, InvalidParamError } = require('../utils/errors')
 
 module.exports = class SignUpUseCase {
   constructor ({
@@ -23,15 +23,15 @@ module.exports = class SignUpUseCase {
       }
     }
     const accountExists = await this.loadUserByEmailRepository.load(userData.email)
-    if (!accountExists) {
-      const hashedPassword = await this.encrypter.hash(userData.password)
-      const account = await this.createAccountRepository.save(
-        Object.assign({}, userData, { password: hashedPassword })
-      )
-      const accessToken = await this.tokenGenerator.generate(account.id)
-      await this.updateAccessTokenRepository.update(account.id, accessToken)
-      return accessToken
+    if (accountExists) {
+      throw new InvalidParamError(`${userData.email} already exists`)
     }
-    return null
+    const hashedPassword = await this.encrypter.hash(userData.password)
+    const account = await this.createAccountRepository.save(
+      Object.assign({}, userData, { password: hashedPassword })
+    )
+    const accessToken = await this.tokenGenerator.generate(account.id)
+    await this.updateAccessTokenRepository.update(account.id, accessToken)
+    return accessToken
   }
 }
