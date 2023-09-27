@@ -105,7 +105,7 @@ describe('SignUp Router', () => {
     expect(httpResponse.body.accessToken).toEqual(signUpUseCaseSpy.accessToken)
   })
 
-  test('Should throw if invalid dependencies are provided', async () => {
+  test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
     const suts = [
       new SignUpRouter(),

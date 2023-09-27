@@ -166,7 +166,7 @@ describe('SignIn Router', () => {
     expect(emailValidatorSpy.email).toBe(httpResquest.body.email)
   })
 
-  test('Should throw if invalid dependencies are provided', async () => {
+  test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
     const signInUseCaseSpy = makeSignInUseCase()
     const suts = [
@@ -196,7 +196,7 @@ describe('SignIn Router', () => {
     }
   })
 
-  test('Should throw if any dependency throws', async () => {
+  test('Should return 500 if any dependency throws', async () => {
     const suts = [
       new SignInRouter({
         signInUseCase: makeSignInUseCaseWithError()
