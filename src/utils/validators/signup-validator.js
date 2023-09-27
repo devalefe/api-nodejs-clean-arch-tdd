@@ -1,5 +1,4 @@
 const yup = require('yup')
-const InvalidParamError = require('../errors/invalid-param-error')
 
 module.exports = class SignUpValidator {
   constructor () {
@@ -55,19 +54,15 @@ module.exports = class SignUpValidator {
     password
   } = {}) {
     try {
-      await this.schema.validate({
+      return await this.schema.validate({
         firstName,
         lastName,
         phone,
         email,
         password
-      }, {
-        abortEarly: false
-      })
-
-      return true
+      }, { /* abortEarly: false */ })
     } catch (error) {
-      throw new InvalidParamError(error.errors)
+      return error.errors[0]
     }
   }
 }

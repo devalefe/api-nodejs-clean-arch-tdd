@@ -1,4 +1,3 @@
-const InvalidParamError = require('../errors/invalid-param-error')
 const SignUpValidator = require('./signup-validator')
 
 const signUpForm = {
@@ -12,8 +11,13 @@ const signUpForm = {
 describe('SignUp Validator', () => {
   test('Should throw if invalid fields are provided', async () => {
     const validator = new SignUpValidator()
-    const promise = validator.validate()
-    await expect(promise).rejects.toThrow(new InvalidParamError('firstName is a required field,lastName is a required field,phone is a required field,email is a required field,password is a required field'))
+    const fields = Object.keys(signUpForm)
+    for (const field of fields) {
+      const message = await validator.validate(
+        Object.assign({}, signUpForm, { [field]: undefined })
+      )
+      expect(message).toBe(`${field} is a required field`)
+    }
   })
 
   test('Should call validator with correct values', async () => {
@@ -25,7 +29,7 @@ describe('SignUp Validator', () => {
 
   test('Should return true if valid fields are provided', async () => {
     const validator = new SignUpValidator()
-    const isValid = await validator.validate(signUpForm)
-    expect(isValid).toBeTruthy()
+    const fields = await validator.validate(signUpForm)
+    expect(fields).toEqual(signUpForm)
   })
 })
