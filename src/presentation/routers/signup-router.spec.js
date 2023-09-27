@@ -37,4 +37,11 @@ describe('SignUp Router', () => {
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body.message).toBe(new ServerError().message)
   })
+
+  test('Should return 500 if httpRequest has no body', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.route({})
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body.message).toBe(new ServerError().message)
+  })
 })
