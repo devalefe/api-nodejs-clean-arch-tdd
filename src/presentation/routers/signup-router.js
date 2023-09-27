@@ -22,6 +22,9 @@ module.exports = class SignUpRouter {
         return HttpResponse.ok({ accessToken })
       }
     } catch (error) {
+      if (error.name === 'InvalidParamError') {
+        return HttpResponse.badRequest(error)
+      }
       return HttpResponse.serverError()
     }
   }
