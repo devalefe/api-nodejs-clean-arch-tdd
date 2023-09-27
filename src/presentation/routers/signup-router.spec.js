@@ -1,3 +1,4 @@
+const { ServerError } = require('../errors')
 const SignUpRouter = require('./signup-router')
 
 const makeSut = () => {
@@ -28,5 +29,12 @@ describe('SignUp Router', () => {
       expect(httpResponse.statusCode).toBe(400)
       expect(httpResponse.body.message).toBe(`${field} is a required field`)
     }
+  })
+
+  test('Should return 500 if no httpRequest is provided', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.route()
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body.message).toBe(new ServerError().message)
   })
 })
