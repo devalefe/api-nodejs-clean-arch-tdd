@@ -1,10 +1,24 @@
 const { ServerError } = require('../errors')
 const SignUpRouter = require('./signup-router')
 
+const makeSignUpUseCase = () => {
+  class SignUpUseCaseSpy {
+    async register (accountData = {}) {
+      this.accountData = accountData
+    }
+  }
+  const signUpUseCaseSpy = new SignUpUseCaseSpy()
+  return signUpUseCaseSpy
+}
+
 const makeSut = () => {
-  const sut = new SignUpRouter()
+  const signUpUseCaseSpy = makeSignUpUseCase()
+  const sut = new SignUpRouter({
+    signUpUseCase: signUpUseCaseSpy
+  })
   return {
-    sut
+    sut,
+    signUpUseCaseSpy
   }
 }
 
@@ -43,5 +57,14 @@ describe('SignUp Router', () => {
     const httpResponse = await sut.route({})
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body.message).toBe(new ServerError().message)
+  })
+
+  test('Should call SignUpUseCase with correct params', async () => {
+    const { sut, signUpUseCaseSpy } = makeSut()
+    const httpResquest = {
+      body: signUpForm
+    }
+    await sut.route(httpResquest)
+    expect(signUpUseCaseSpy.accountData).toEqual(httpResquest.body)
   })
 })
