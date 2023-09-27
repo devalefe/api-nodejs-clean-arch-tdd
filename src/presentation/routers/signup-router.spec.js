@@ -79,4 +79,23 @@ describe('SignUp Router', () => {
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body.accessToken).toEqual(signUpUseCaseSpy.accessToken)
   })
+
+  test('Should throw if invalid dependencies are provided', async () => {
+    const invalid = {}
+    const suts = [
+      new SignUpRouter(),
+      new SignUpRouter({
+        signUpUseCase: invalid
+      })
+    ]
+
+    for (const sut of suts) {
+      const httpResquest = {
+        body: signUpForm
+      }
+      const httpResponse = await sut.route(httpResquest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body.message).toBe(new ServerError().message)
+    }
+  })
 })
