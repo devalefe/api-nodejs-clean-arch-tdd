@@ -20,7 +20,10 @@ module.exports = class SignUpRouter {
       }
     } catch (error) {
       if (error.name === 'InvalidParamError') {
-        return HttpResponse.badRequest(error)
+        return HttpResponse.badRequest({
+          message: error.message,
+          detail: error.detail
+        })
       }
       return HttpResponse.serverError()
     }
