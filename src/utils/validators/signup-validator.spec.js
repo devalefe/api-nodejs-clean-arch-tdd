@@ -31,4 +31,10 @@ describe('SignUp Validator', () => {
     await sut.validate(signUpForm)
     expect(validatorSpy).toHaveBeenCalledWith(signUpForm)
   })
+
+  test('Should return values if validate successfuly', async () => {
+    const sut = makeSut()
+    const result = await sut.validate(signUpForm)
+    expect(result).toEqual(signUpForm)
+  })
 })
