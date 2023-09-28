@@ -30,8 +30,14 @@ describe('SignUp Routes', () => {
     const response = await request(app)
       .post('/api/signup')
       .send(userFormData)
-    console.log(response.body)
     expect(response.statusCode).toBe(200)
     expect(response.body).toBeDefined()
+  })
+
+  test('Should return 400 if no credentials are provided', async () => {
+    await request(app)
+      .post('/api/signup')
+      .send({})
+      .expect(400)
   })
 })
