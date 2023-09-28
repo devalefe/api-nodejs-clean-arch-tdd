@@ -4,7 +4,7 @@ const SignUpValidator = require('./signup-validator')
 const signUpForm = {
   firstName: 'John',
   lastName: 'Doe',
-  phone: '55999999999',
+  phone: '5512987654321',
   email: 'test@mail.com',
   password: 'TestUpperLower1!',
   passwordConfirmation: 'TestUpperLower1!'
@@ -17,7 +17,7 @@ const makeSut = () => {
 describe('SignUp Validator', () => {
   test('Should throw if invalid params are provided', async () => {
     const sut = makeSut()
-    const promise = sut.validate(signUpForm)
+    const promise = sut.validate(Object.assign({}, signUpForm, { phone: undefined }))
     await expect(promise).rejects.toThrow(new InvalidParamError({
       phone: [
         'O número de telefone é obrigatório'
