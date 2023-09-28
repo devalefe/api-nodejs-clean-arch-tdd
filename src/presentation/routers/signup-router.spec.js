@@ -133,10 +133,17 @@ describe('SignUp Router', () => {
 
   test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
+    const signUpUseCase = makeSignUpUseCase()
+    const signUpValidator = makeSignUpValidator()
     const suts = [
       new SignUpRouter(),
       new SignUpRouter({
-        signUpUseCase: invalid
+        signUpUseCase: invalid,
+        signUpValidator
+      }),
+      new SignUpRouter({
+        signUpUseCase,
+        signUpValidator: invalid
       })
     ]
 
