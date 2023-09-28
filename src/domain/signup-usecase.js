@@ -27,7 +27,7 @@ module.exports = class SignUpUseCase {
       throw new InvalidParamError(`${userData.email} already exists`)
     }
     const hashedPassword = await this.encrypter.hash(userData.password)
-    const account = await this.createAccountRepository.save(
+    const account = await this.createAccountRepository.create(
       Object.assign({}, userData, { password: hashedPassword })
     )
     const accessToken = await this.tokenGenerator.generate(account.id)

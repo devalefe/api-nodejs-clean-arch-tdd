@@ -78,7 +78,7 @@ const makeLoadUserByEmailRepositoryWithError = () => {
 
 const makeCreateAccountRepository = () => {
   class CreateAccountRepositorySpy {
-    async save (userData) {
+    async create (userData) {
       this.userData = userData
       this.account = Object.assign({}, userData, { id: this.id, password: undefined })
       return this.account
@@ -91,7 +91,7 @@ const makeCreateAccountRepository = () => {
 
 const makeCreateAccountRepositoryWithError = () => {
   class CreateAccountRepositorySpy {
-    async save (userData) {
+    async create (userData) {
       throw new Error()
     }
   }
