@@ -48,6 +48,16 @@ const makeSignUpValidator = () => {
   return validator
 }
 
+const makeSignUpValidatorWithError = () => {
+  class SignUpValidatorSpy {
+    async validate (formData = {}) {
+      throw new Error()
+    }
+  }
+  const validator = new SignUpValidatorSpy()
+  return validator
+}
+
 const makeSut = () => {
   const signUpUseCaseSpy = makeSignUpUseCase()
   const signUpValidatorSpy = makeSignUpValidator()
@@ -158,10 +168,17 @@ describe('SignUp Router', () => {
   })
 
   test('Should return 500 if any dependency throws', async () => {
+    const signUpUseCase = makeSignUpUseCase()
+    const signUpValidator = makeSignUpValidator()
     const suts = [
       new SignUpRouter(),
       new SignUpRouter({
-        signUpUseCase: makeSignUpUseCaseWithError()
+        signUpUseCase: makeSignUpUseCaseWithError(),
+        signUpValidator
+      }),
+      new SignUpRouter({
+        signUpUseCase,
+        signUpValidator: makeSignUpValidatorWithError()
       })
     ]
 
