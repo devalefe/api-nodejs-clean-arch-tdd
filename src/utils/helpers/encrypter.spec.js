@@ -21,8 +21,7 @@ jest.mock('bcrypt', () => ({
 }))
 
 const makeSut = () => {
-  const salt = 12
-  return new Encrypter(salt)
+  return new Encrypter()
 }
 
 describe('Encrypter', () => {
@@ -56,5 +55,13 @@ describe('Encrypter', () => {
     const sut = makeSut()
     const valueHashed = await sut.hash('any_value')
     expect(valueHashed).toBe('value_hashed')
+  })
+
+  test('Should call bcrypt hash method with correct values', async () => {
+    const salt = 10
+    const sut = new Encrypter(salt)
+    await sut.hash('any_value')
+    expect(bcrypt.value).toBe('any_value')
+    expect(bcrypt.salt).toBe(10)
   })
 })
