@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const MissingParamError = require('../errors/missing-param-error')
 
 module.exports = class Encrypter {
-  constructor (salt = 12) {
+  constructor (salt) {
     this.salt = salt
   }
 
