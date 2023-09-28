@@ -3,13 +3,13 @@ const app = require('../config/app')
 const MongoHelper = require('../../infra/helpers/mongo-connection-helper')
 let userModel
 
-const userFormData = {
+const signUpForm = {
   firstName: 'John',
   lastName: 'Doe',
-  phone: '+55 00 0000-0000',
+  phone: '5512987654321',
   email: 'test@mail.com',
-  password: 'TestUpperLower1',
-  passwordConfirmation: 'TestUpperLower1'
+  password: 'TestUpperLower1!',
+  passwordConfirmation: 'TestUpperLower1!'
 }
 
 describe('SignUp Routes', () => {
@@ -29,7 +29,7 @@ describe('SignUp Routes', () => {
   test('Should return 200 if valid credentials are provided', async () => {
     const response = await request(app)
       .post('/api/signup')
-      .send(userFormData)
+      .send(signUpForm)
     expect(response.statusCode).toBe(200)
     expect(response.body).toBeDefined()
   })
@@ -44,15 +44,15 @@ describe('SignUp Routes', () => {
   test('Should return 400 if invalid credentials are provided', async () => {
     await request(app)
       .post('/api/signin')
-      .send(Object.assign({}, userFormData, { password: undefined }))
+      .send(Object.assign({}, signUpForm, { password: undefined }))
       .expect(400)
   })
 
   test('Should return 400 if email already exists', async () => {
-    await userModel.insertOne(userFormData)
+    await userModel.insertOne(signUpForm)
     await request(app)
       .post('/api/signup')
-      .send(userFormData)
+      .send(signUpForm)
       .expect(400)
   })
 })
