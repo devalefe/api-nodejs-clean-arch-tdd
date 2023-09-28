@@ -31,7 +31,7 @@ describe('CreateAccount Repository', () => {
 
   test('Should create account with te given params', async () => {
     const sut = makeSut()
-    const { insertedId } = await sut.create(accountData, 'valid_token')
+    const { insertedId } = await sut.create(accountData)
     const cretaedAccount = await userModel.findOne({ _id: insertedId })
     expect(insertedId).toBeTruthy()
     expect(cretaedAccount).toEqual(Object.assign({}, accountData, { _id: insertedId }))
