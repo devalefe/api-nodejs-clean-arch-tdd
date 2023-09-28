@@ -18,11 +18,10 @@ describe('SignUp Validator', () => {
   test('Should throw if invalid params are provided', async () => {
     const sut = makeSut()
     const promise = sut.validate(Object.assign({}, signUpForm, { phone: undefined }))
-    await expect(promise).rejects.toThrow(new InvalidParamError({
-      phone: [
-        'O número de telefone é obrigatório'
-      ]
-    }))
+    await expect(promise).rejects.toThrow(new InvalidParamError(
+      'Erro ao validar os campos',
+      { phone: ['O número de telefone é obrigatório'] }
+    ))
   })
 
   test('Should call SignUpValidator.validate with correct values', async () => {
