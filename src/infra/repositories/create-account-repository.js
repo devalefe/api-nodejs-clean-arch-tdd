@@ -7,12 +7,14 @@ module.exports = class CreateAccountRepository {
       throw new MissingParamError('accountData')
     }
     const userModel = await MongoHelper.getCollection('users')
-    return await userModel.insertOne({
+    const account = await userModel.insertOne({
       firstName: accountData.firstName,
       lastName: accountData.lastName,
       phone: accountData.phone,
       email: accountData.email,
       password: accountData.password
     })
+
+    return Object.assign({}, account, { id: account.insertedId })
   }
 }
