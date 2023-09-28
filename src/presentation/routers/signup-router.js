@@ -1,22 +1,19 @@
-const MissingParamError = require('../../utils/errors/missing-param-error')
 const HttpResponse = require('../helpers/http-response')
 
 module.exports = class SignUpRouter {
   constructor ({
-    signUpUseCase
+    signUpUseCase,
+    signUpValidator
   } = {}) {
     this.signUpUseCase = signUpUseCase
+    this.signUpValidator = signUpValidator
   }
 
   async route (httpRequest) {
     try {
-      const accountData = httpRequest.body
-      const requiredFields = ['firstName', 'lastName', 'phone', 'email', 'password', 'passwordConfirmation']
-      for (const field of requiredFields) {
-        if (!accountData[field]) {
-          return HttpResponse.badRequest(new MissingParamError(`${field} is a required field`))
-        }
-      }
+      const formData = httpRequest.body
+      if (!formData) throw new Error()
+      const accountData = await this.signUpValidator.validate(formData)
       const accessToken = await this.signUpUseCase.register(accountData)
       if (accessToken) {
         return HttpResponse.ok({ accessToken })
