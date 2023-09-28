@@ -47,4 +47,12 @@ describe('SignUp Routes', () => {
       .send(Object.assign({}, userFormData, { password: undefined }))
       .expect(400)
   })
+
+  test('Should return 400 if email already exists', async () => {
+    await userModel.insertOne(userFormData)
+    await request(app)
+      .post('/api/signup')
+      .send(userFormData)
+      .expect(400)
+  })
 })
