@@ -40,4 +40,11 @@ describe('SignUp Routes', () => {
       .send({})
       .expect(400)
   })
+
+  test('Should return 400 if invalid credentials are provided', async () => {
+    await request(app)
+      .post('/api/signin')
+      .send(Object.assign({}, userFormData, { password: undefined }))
+      .expect(400)
+  })
 })
