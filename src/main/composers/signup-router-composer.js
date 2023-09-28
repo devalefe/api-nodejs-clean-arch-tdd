@@ -1,4 +1,5 @@
 const SignUpUseCase = require('../../domain/signup-usecase')
+const SignUpValidator = require('../../utils/validators/signup-validator')
 const SignUpRouter = require('../../presentation/routers/signup-router')
 const TokenGenerator = require('../../utils/helpers/token-generator')
 const Encrypter = require('../../utils/helpers/encrypter')
@@ -21,8 +22,10 @@ module.exports = class SignUpRouterComposer {
       tokenGenerator,
       encrypter
     })
+    const signUpValidator = new SignUpValidator()
     const signUpRouter = new SignUpRouter({
-      signUpUseCase
+      signUpUseCase,
+      signUpValidator
     })
     return signUpRouter
   }
