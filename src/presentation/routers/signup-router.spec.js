@@ -37,7 +37,10 @@ const makeSignUpValidator = () => {
       ]
       for (const field of requiredFields) {
         if (!formData[field]) {
-          throw new InvalidParamError()
+          throw new InvalidParamError(
+            'Erro ao validar campos',
+            { [field]: `${field} não é obrigatório` }
+          )
         }
       }
       this.formData = formData
@@ -90,7 +93,10 @@ describe('SignUp Router', () => {
       }
       const httpResponse = await sut.route(httpRequest)
       expect(httpResponse.statusCode).toBe(400)
-      expect(httpResponse.body.message).toBeDefined()
+      expect(httpResponse.body).toEqual({
+        message: 'Erro ao validar campos',
+        detail: { [field]: `${field} não é obrigatório` }
+      })
     }
   })
 
