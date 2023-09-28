@@ -55,7 +55,10 @@ module.exports = class SignUpValidator {
       error.inner.map(({ path, errors }) =>
         Object.assign(serializedErrors, { [path]: errors })
       )
-      throw new InvalidParamError(serializedErrors)
+      throw new InvalidParamError(
+        'Erro ao validar os campos',
+        serializedErrors
+      )
     }
   }
 }
