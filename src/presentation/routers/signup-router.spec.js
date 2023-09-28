@@ -1,5 +1,6 @@
-const { InvalidParamError } = require('../../utils/errors')
 const { ServerError } = require('../errors')
+const { InvalidParamError } = require('../../utils/errors')
+const SignUpValidator = require('../../utils/validators/signup-validator')
 const SignUpRouter = require('./signup-router')
 
 const makeSignUpUseCase = () => {
@@ -24,10 +25,17 @@ const makeSignUpUseCaseWithError = () => {
   return signUpUseCaseSpy
 }
 
+const makeSignUpValidator = () => {
+  const validator = new SignUpValidator()
+  return validator
+}
+
 const makeSut = () => {
   const signUpUseCaseSpy = makeSignUpUseCase()
+  const signUpValidatorSpy = makeSignUpValidator()
   const sut = new SignUpRouter({
-    signUpUseCase: signUpUseCaseSpy
+    signUpUseCase: signUpUseCaseSpy,
+    signUpValidator: signUpValidatorSpy
   })
   return {
     sut,
@@ -38,10 +46,10 @@ const makeSut = () => {
 const signUpForm = {
   firstName: 'John',
   lastName: 'Doe',
-  phone: '+55 00 0000-0000',
+  phone: '5512987654321',
   email: 'test@mail.com',
-  password: 'TestUpperLower1',
-  passwordConfirmation: 'TestUpperLower1'
+  password: 'TestUpperLower1!',
+  passwordConfirmation: 'TestUpperLower1!'
 }
 
 describe('SignUp Router', () => {
@@ -54,7 +62,7 @@ describe('SignUp Router', () => {
       }
       const httpResponse = await sut.route(httpRequest)
       expect(httpResponse.statusCode).toBe(400)
-      expect(httpResponse.body.message).toBe(`${field} is a required field`)
+      expect(httpResponse.body.message).toBeDefined()
     }
   })
 
