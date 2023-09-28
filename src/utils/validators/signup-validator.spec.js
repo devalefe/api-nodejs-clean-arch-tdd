@@ -24,4 +24,11 @@ describe('SignUp Validator', () => {
       ]
     }))
   })
+
+  test('Should call SignUpValidator.validate with correct values', async () => {
+    const sut = new SignUpValidator()
+    const validatorSpy = jest.spyOn(sut, 'validate')
+    await sut.validate(signUpForm)
+    expect(validatorSpy).toHaveBeenCalledWith(signUpForm)
+  })
 })
