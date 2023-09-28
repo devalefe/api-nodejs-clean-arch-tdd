@@ -1,6 +1,5 @@
 const { ServerError } = require('../errors')
 const { InvalidParamError } = require('../../utils/errors')
-const SignUpValidator = require('../../utils/validators/signup-validator')
 const SignUpRouter = require('./signup-router')
 
 const makeSignUpUseCase = () => {
@@ -26,7 +25,26 @@ const makeSignUpUseCaseWithError = () => {
 }
 
 const makeSignUpValidator = () => {
-  const validator = new SignUpValidator()
+  class SignUpValidatorSpy {
+    async validate (formData = {}) {
+      const requiredFields = [
+        'firstName',
+        'lastName',
+        'phone',
+        'email',
+        'password',
+        'passwordConfirmation'
+      ]
+      for (const field of requiredFields) {
+        if (!formData[field]) {
+          throw new InvalidParamError()
+        }
+      }
+      this.formData = formData
+      return this.formData
+    }
+  }
+  const validator = new SignUpValidatorSpy()
   return validator
 }
 
