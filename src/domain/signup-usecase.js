@@ -26,7 +26,7 @@ module.exports = class SignUpUseCase {
     if (accountExists) {
       throw new InvalidParamError(
         'Erro ao cadastrar',
-        { email: `${userData.email} already exists` }
+        { email: 'O email informado já existe' }
       )
     }
     const hashedPassword = await this.encrypter.hash(userData.password)

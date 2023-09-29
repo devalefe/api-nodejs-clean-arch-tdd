@@ -197,7 +197,7 @@ describe('SignUp UseCase', () => {
     await expect(promise).rejects.toThrow(
       new InvalidParamError(
         'Erro ao cadastrar',
-        { email: `${signUpForm.email} already exists` }
+        { email: 'O email informado já existe' }
       )
     )
   })
