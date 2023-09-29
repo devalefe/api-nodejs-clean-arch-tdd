@@ -31,14 +31,22 @@ describe('SignUp Routes', () => {
       .post('/api/signup')
       .send(signUpForm)
     expect(response.statusCode).toBe(200)
-    expect(response.body).toBeDefined()
+    expect(response.body.accessToken).toBeDefined()
   })
 
   test('Should return 400 if no credentials are provided', async () => {
-    await request(app)
+    const response = await request(app)
       .post('/api/signup')
       .send({})
-      .expect(400)
+    expect(response.statusCode).toBe(400)
+    expect(response.body.detail).toEqual({
+      firstName: ['O nome é obrigatório'],
+      lastName: ['O sobrenome é obrigatório'],
+      phone: ['O número de telefone é obrigatório'],
+      email: ['O email é obrigatório'],
+      passwordConfirmation: ['A confirmação de senha é obrigatória'],
+      password: ['A senha é obrigatória']
+    })
   })
 
   test('Should return 400 if invalid credentials are provided', async () => {
