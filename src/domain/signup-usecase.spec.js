@@ -194,7 +194,12 @@ describe('SignUp UseCase', () => {
     jest.spyOn(loadUserByEmailRepositorySpy, 'load')
       .mockReturnValueOnce(new Promise(resolve => resolve({ id: 'valid_id' })))
     const promise = sut.register(signUpForm)
-    expect(promise).rejects.toThrow(new InvalidParamError(`${signUpForm.email} already exists`))
+    await expect(promise).rejects.toThrow(
+      new InvalidParamError(
+        'Erro ao cadastrar',
+        { email: `${signUpForm.email} already exists` }
+      )
+    )
   })
 
   test('Should returns an accessToken if user is registered successfuly', async () => {
