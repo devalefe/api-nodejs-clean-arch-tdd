@@ -39,7 +39,7 @@ const makeSignUpValidator = () => {
         if (!formData[field]) {
           throw new InvalidParamError(
             'Erro ao validar campos',
-            { [field]: `${field} não é obrigatório` }
+            { [field]: `${field} é obrigatório` }
           )
         }
       }
@@ -95,7 +95,7 @@ describe('SignUp Router', () => {
       expect(httpResponse.statusCode).toBe(400)
       expect(httpResponse.body).toEqual({
         message: 'Erro ao validar campos',
-        detail: { [field]: `${field} não é obrigatório` }
+        detail: { [field]: `${field} é obrigatório` }
       })
     }
   })
@@ -107,11 +107,17 @@ describe('SignUp Router', () => {
     const { sut, signUpUseCaseSpy } = makeSut()
     jest.spyOn(signUpUseCaseSpy, 'register')
       .mockImplementation(() => {
-        throw new InvalidParamError(`${signUpForm.email} already exists`)
+        throw new InvalidParamError(
+          'Erro ao cadastrar',
+          { email: `${signUpForm.email} already exists` }
+        )
       })
     const httpResponse = await sut.route(httpResquest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body.message).toBe(`${signUpForm.email} already exists`)
+    expect(httpResponse.body).toEqual({
+      message: 'Erro ao cadastrar',
+      detail: { email: `${signUpForm.email} already exists` }
+    })
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
