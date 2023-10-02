@@ -14,4 +14,11 @@ describe('Update Profile UseCase', () => {
     const result = await sut.update(signUpForm)
     expect(result).toBeTruthy()
   })
+
+  test('Should call UpdateProfileUseCase.update with correct values', async () => {
+    const sut = new UpdateProfileUseCase()
+    const sutSpy = jest.spyOn(sut, 'update')
+    await sut.update(signUpForm)
+    expect(sutSpy).toHaveBeenCalledWith(signUpForm)
+  })
 })
