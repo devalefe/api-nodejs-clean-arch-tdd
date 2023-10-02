@@ -11,7 +11,7 @@ module.exports = class UpdateAccountRouter {
     try {
       const formData = httpRequest.body
       if (!formData) throw new Error()
-      await this.updateAccountUseCase.update()
+      await this.updateAccountUseCase.update(formData)
     } catch (error) {
       return HttpResponse.serverError()
     }
