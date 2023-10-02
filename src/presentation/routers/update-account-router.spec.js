@@ -90,7 +90,7 @@ describe('UpdateAccount Router', () => {
     expect(httpResponse.body.message).toBe(new ServerError().message)
   })
 
-  test('Should return 500 if no formData is provided', async () => {
+  test('Should return 500 if httpRequest has no body', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       body: undefined
