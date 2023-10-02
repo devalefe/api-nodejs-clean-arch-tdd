@@ -9,9 +9,9 @@ const signUpForm = {
 }
 
 describe('Update Profile UseCase', () => {
-  test('Should return null if account has updated successfuly', async () => {
+  test('Should return true if account has updated successfuly', async () => {
     const sut = new UpdateProfileUseCase()
     const result = await sut.update(signUpForm)
-    expect(result).toBeNull()
+    expect(result).toBeTruthy()
   })
 })
