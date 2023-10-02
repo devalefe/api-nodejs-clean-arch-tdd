@@ -8,15 +8,22 @@ const signUpForm = {
   password: 'TestUpperLower1'
 }
 
+const makeSut = () => {
+  const sut = new UpdateProfileUseCase()
+  return {
+    sut
+  }
+}
+
 describe('Update Profile UseCase', () => {
   test('Should return true if account has updated successfuly', async () => {
-    const sut = new UpdateProfileUseCase()
+    const { sut } = makeSut()
     const result = await sut.update(signUpForm)
     expect(result).toBeTruthy()
   })
 
   test('Should call UpdateProfileUseCase.update with correct values', async () => {
-    const sut = new UpdateProfileUseCase()
+    const { sut } = makeSut()
     const sutSpy = jest.spyOn(sut, 'update')
     await sut.update(signUpForm)
     expect(sutSpy).toHaveBeenCalledWith(signUpForm)
