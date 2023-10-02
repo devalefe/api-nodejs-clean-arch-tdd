@@ -8,14 +8,38 @@ const updateAccountForm = {
   email: 'example@mail.com'
 }
 
+const makeUpdateAccountUseCase = () => {
+  class UpdateAccountUseCaseSpy {
+    async update (formData = {}) {
+      this.formData = formData
+      return true
+    }
+  }
+  const updateAccountUseCaseSpy = new UpdateAccountUseCaseSpy()
+  return updateAccountUseCaseSpy
+}
+
 const makeSut = () => {
-  const sut = new UpdateAccountRouter()
+  const updateAccountUseCase = makeUpdateAccountUseCase()
+  const sut = new UpdateAccountRouter({
+    updateAccountUseCase
+  })
   return {
-    sut
+    sut,
+    updateAccountUseCase
   }
 }
 
 describe('UpdateAccount Router', () => {
+  test('Should call UpdateAccountUserCase with correct values', async () => {
+    const { sut, updateAccountUseCase } = makeSut()
+    const httpResquest = {
+      body: updateAccountForm
+    }
+    await sut.route(httpResquest)
+    expect(updateAccountUseCase.formData).toEqual(updateAccountForm)
+  })
+
   test('Should return 500 if no httpRequest is provided', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.route()
