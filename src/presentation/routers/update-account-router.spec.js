@@ -1,4 +1,5 @@
 const { ServerError } = require('../errors')
+const { InvalidParamError } = require('../../utils/errors')
 const UpdateAccountRouter = require('./update-account-router')
 
 const updateAccountForm = {
@@ -32,6 +33,20 @@ const makeUpdateAccountValidatorWithError = () => {
 const makeUpdateAccountUseCase = () => {
   class UpdateAccountUseCaseSpy {
     async update (accountData = {}) {
+      const requiredFields = [
+        'firstName',
+        'lastName',
+        'phone',
+        'email'
+      ]
+      for (const field of requiredFields) {
+        if (!accountData[field]) {
+          throw new InvalidParamError(
+            'Erro ao validar campos',
+            { [field]: `${field} é obrigatório` }
+          )
+        }
+      }
       this.accountData = accountData
       return true
     }
@@ -65,6 +80,22 @@ const makeSut = () => {
 }
 
 describe('UpdateAccount Router', () => {
+  test('Should return 400 if any field is not provided', async () => {
+    const { sut } = makeSut()
+    const fields = Object.keys(updateAccountForm)
+    for (const field of fields) {
+      const httpRequest = {
+        body: Object.assign({}, updateAccountForm, { [field]: undefined })
+      }
+      const httpResponse = await sut.route(httpRequest)
+      expect(httpResponse.statusCode).toBe(400)
+      expect(httpResponse.body).toEqual({
+        message: 'Erro ao validar campos',
+        detail: { [field]: `${field} é obrigatório` }
+      })
+    }
+  })
+
   test('Should call UpdateAccountValidator with correct values', async () => {
     const { sut, updateAccountValidator } = makeSut()
     const httpResquest = {
