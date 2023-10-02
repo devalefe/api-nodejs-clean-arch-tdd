@@ -4,7 +4,7 @@ const MongoHelper = require('../helpers/mongo-connection-helper')
 module.exports = class UpdateAccountRepository {
   async update (accountId, accountData) {
     if (!accountId) {
-      throw new MissingParamError('id')
+      throw new MissingParamError('accountId')
     }
     if (!accountData) {
       throw new MissingParamError('accountData')
