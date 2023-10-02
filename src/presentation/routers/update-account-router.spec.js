@@ -79,7 +79,7 @@ describe('UpdateAccount Router', () => {
     expect(httpResponse.body.message).toBe(new ServerError().message)
   })
 
-  test('Should throw if invalid dependencies are provided', async () => {
+  test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
     const updateAccountUseCase = makeUpdateAccountUseCase()
     const updateAccountValidator = makeUpdateAccountValidator()
