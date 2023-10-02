@@ -22,6 +22,15 @@ const makeLoadUserByEmailRepository = () => {
   return loadUserByEmailRepositorySpy
 }
 
+const makeLoadUserByEmailRepositoryWithError = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      throw new Error()
+    }
+  }
+  return new LoadUserByEmailRepositorySpy()
+}
+
 const makeSut = () => {
   const loadUserByEmailRepository = makeLoadUserByEmailRepository()
   const sut = new UpdateAccountUseCase({
@@ -76,6 +85,19 @@ describe('Update Account UseCase', () => {
       new UpdateAccountUseCase({}),
       new UpdateAccountUseCase({
         loadUserByEmailRepository: invalid
+      })
+    ]
+    for (const sut of suts) {
+      const promise = sut.update(signUpForm)
+      await expect(promise).rejects.toThrow()
+    }
+  })
+
+  test('Should throw if any dependency throws', async () => {
+    const loadUserByEmailRepository = makeLoadUserByEmailRepositoryWithError()
+    const suts = [
+      new UpdateAccountUseCase({
+        loadUserByEmailRepository
       })
     ]
     for (const sut of suts) {
