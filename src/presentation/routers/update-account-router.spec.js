@@ -45,6 +45,15 @@ const makeSut = () => {
 }
 
 describe('UpdateAccount Router', () => {
+  test('Should call UpdateAccountValidator with correct values', async () => {
+    const { sut, updateAccountValidator } = makeSut()
+    const httpResquest = {
+      body: updateAccountForm
+    }
+    await sut.route(httpResquest)
+    expect(updateAccountValidator.formData).toEqual(updateAccountForm)
+  })
+
   test('Should call UpdateAccountUserCase with correct values', async () => {
     const { sut, updateAccountUseCase } = makeSut()
     const httpResquest = {
