@@ -80,22 +80,6 @@ const makeSut = () => {
 }
 
 describe('UpdateAccount Router', () => {
-  test('Should return 400 if any field is not provided', async () => {
-    const { sut } = makeSut()
-    const fields = Object.keys(updateAccountForm)
-    for (const field of fields) {
-      const httpRequest = {
-        body: Object.assign({}, updateAccountForm, { [field]: undefined })
-      }
-      const httpResponse = await sut.route(httpRequest)
-      expect(httpResponse.statusCode).toBe(400)
-      expect(httpResponse.body).toEqual({
-        message: 'Erro ao validar campos',
-        detail: { [field]: `${field} é obrigatório` }
-      })
-    }
-  })
-
   test('Should call UpdateAccountValidator with correct values', async () => {
     const { sut, updateAccountValidator } = makeSut()
     const httpResquest = {
@@ -112,6 +96,42 @@ describe('UpdateAccount Router', () => {
     }
     await sut.route(httpResquest)
     expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
+  })
+
+  test('Should return 400 if any field is not provided', async () => {
+    const { sut } = makeSut()
+    const fields = Object.keys(updateAccountForm)
+    for (const field of fields) {
+      const httpRequest = {
+        body: Object.assign({}, updateAccountForm, { [field]: undefined })
+      }
+      const httpResponse = await sut.route(httpRequest)
+      expect(httpResponse.statusCode).toBe(400)
+      expect(httpResponse.body).toEqual({
+        message: 'Erro ao validar campos',
+        detail: { [field]: `${field} é obrigatório` }
+      })
+    }
+  })
+
+  test('Should return 400 if email already exists', async () => {
+    const httpResquest = {
+      body: updateAccountForm
+    }
+    const { sut, updateAccountUseCase } = makeSut()
+    jest.spyOn(updateAccountUseCase, 'update')
+      .mockImplementation(() => {
+        throw new InvalidParamError(
+          'Erro ao cadastrar',
+          { email: `${updateAccountForm.email} already exists` }
+        )
+      })
+    const httpResponse = await sut.route(httpResquest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual({
+      message: 'Erro ao cadastrar',
+      detail: { email: `${updateAccountForm.email} already exists` }
+    })
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
