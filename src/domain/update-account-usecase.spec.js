@@ -42,6 +42,16 @@ const makeUpdateAccountRepository = () => {
   return updateAccountRepository
 }
 
+const makeUpdateAccountRepositoryWithError = () => {
+  class UpdateAccountRepository {
+    async update (accountData = {}) {
+      throw new Error()
+    }
+  }
+  const updateAccountRepository = new UpdateAccountRepository()
+  return updateAccountRepository
+}
+
 const makeSut = () => {
   const loadUserByEmailRepository = makeLoadUserByEmailRepository()
   const updateAccountRepository = makeUpdateAccountRepository()
@@ -116,9 +126,11 @@ describe('Update Account UseCase', () => {
 
   test('Should throw if any dependency throws', async () => {
     const loadUserByEmailRepository = makeLoadUserByEmailRepositoryWithError()
+    const updateAccountRepository = makeUpdateAccountRepositoryWithError()
     const suts = [
       new UpdateAccountUseCase({
-        loadUserByEmailRepository
+        loadUserByEmailRepository,
+        updateAccountRepository
       })
     ]
     for (const sut of suts) {
