@@ -8,8 +8,7 @@ const signUpForm = {
   lastName: 'Doe',
   phone: '5512987654321',
   email: 'test@mail.com',
-  password: 'TestUpperLower1!',
-  passwordConfirmation: 'TestUpperLower1!'
+  password: 'TestUpperLower1!'
 }
 
 describe('SignUp Routes', () => {
@@ -44,7 +43,6 @@ describe('SignUp Routes', () => {
       lastName: ['O sobrenome é obrigatório'],
       phone: ['O número de telefone é obrigatório'],
       email: ['O email é obrigatório'],
-      passwordConfirmation: ['A confirmação de senha é obrigatória'],
       password: ['A senha é obrigatória']
     })
   })
