@@ -1,5 +1,6 @@
 const UpdateAccountRepository = require('./update-account-repository')
 const MongoHelper = require('../helpers/mongo-connection-helper')
+const { MissingParamError } = require('../../utils/errors')
 let userModel, accountId
 
 const accountData = {
@@ -39,5 +40,11 @@ describe('UpdateAccount Repository', () => {
     await sut.update(accountId, updatedAccount)
     const account = await userModel.findOne({ _id: accountId })
     expect(account).toEqual(updatedAccount)
+  })
+
+  test('Should throw if no params are provided', async () => {
+    const sut = makeSut()
+    expect(sut.update()).rejects.toThrow(new MissingParamError('accountId'))
+    expect(sut.update(accountId)).rejects.toThrow(new MissingParamError('accountData'))
   })
 })
