@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../utils/errors')
+const { MissingParamError, InvalidParamError } = require('../utils/errors')
 const UpdateProfileUseCase = require('./update-profile-usecase')
 
 const signUpForm = {
@@ -10,10 +10,26 @@ const signUpForm = {
   password: 'TestUpperLower1'
 }
 
+const makeLoadUserByEmailRepository = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      this._id = 'any_id'
+      this.email = email
+      return null
+    }
+  }
+  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+  return loadUserByEmailRepositorySpy
+}
+
 const makeSut = () => {
-  const sut = new UpdateProfileUseCase()
+  const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+  const sut = new UpdateProfileUseCase({
+    loadUserByEmailRepository
+  })
   return {
-    sut
+    sut,
+    loadUserByEmailRepository
   }
 }
 
@@ -35,5 +51,21 @@ describe('Update Profile UseCase', () => {
     const { sut } = makeSut()
     const promise = sut.update(Object.assign({}, signUpForm, { id: undefined }))
     await expect(promise).rejects.toThrow(new MissingParamError('id'))
+  })
+
+  test('Should throw if email already exists', async () => {
+    const { sut, loadUserByEmailRepository } = makeSut()
+    loadUserByEmailRepository._id = 'any_id'
+    jest.spyOn(loadUserByEmailRepository, 'load').mockReturnValueOnce(
+      new Promise(resolve => resolve({
+        _id: this._id,
+        email: this.email
+      }))
+    )
+    const promise = sut.update(Object.assign({}, signUpForm, { id: 'any_id' }))
+    await expect(promise).rejects.toThrow(new InvalidParamError(
+      'Falha ao atualizar perfil',
+      { email: ['O email informado já existe'] }
+    ))
   })
 })
