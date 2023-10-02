@@ -38,10 +38,7 @@ const schema = yup.object().shape({
     .matches(
       /^(?=.*[\W_]).*$/,
       'Pelo menos 1 símbolo é necessário'
-    ),
-  passwordConfirmation: yup
-    .string()
-    .required('A confirmação de senha é obrigatória')
+    )
 })
 
 module.exports = class SignUpValidator {
