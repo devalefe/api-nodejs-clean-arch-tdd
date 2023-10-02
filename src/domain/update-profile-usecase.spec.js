@@ -1,6 +1,8 @@
+const { MissingParamError } = require('../utils/errors')
 const UpdateProfileUseCase = require('./update-profile-usecase')
 
 const signUpForm = {
+  id: 'valid_id',
   firstName: 'John',
   lastName: 'Doe',
   phone: '+55 00 0000-0000',
@@ -27,5 +29,11 @@ describe('Update Profile UseCase', () => {
     const sutSpy = jest.spyOn(sut, 'update')
     await sut.update(signUpForm)
     expect(sutSpy).toHaveBeenCalledWith(signUpForm)
+  })
+
+  test('Should throw if no user id is provided', async () => {
+    const { sut } = makeSut()
+    const promise = sut.update(Object.assign({}, signUpForm, { id: undefined }))
+    await expect(promise).rejects.toThrow(new MissingParamError('id'))
   })
 })
