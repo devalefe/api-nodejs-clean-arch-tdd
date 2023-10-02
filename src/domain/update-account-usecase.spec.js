@@ -94,11 +94,18 @@ describe('Update Account UseCase', () => {
 
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const updateAccountRepository = makeUpdateAccountRepository()
     const suts = [
       new UpdateAccountUseCase(),
       new UpdateAccountUseCase({}),
       new UpdateAccountUseCase({
-        loadUserByEmailRepository: invalid
+        loadUserByEmailRepository: invalid,
+        updateAccountRepository
+      }),
+      new UpdateAccountUseCase({
+        loadUserByEmailRepository,
+        updateAccountRepository: invalid
       })
     ]
     for (const sut of suts) {
