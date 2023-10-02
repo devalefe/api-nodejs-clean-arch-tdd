@@ -1,29 +1,11 @@
 const { ServerError } = require('../errors')
-const HttpResponse = require('../helpers/http-response')
+const UpdateAccountRouter = require('./update-account-router')
 
 const updateAccountForm = {
   firstName: 'John',
   lastName: 'Doe',
   phone: '5512987654321',
   email: 'example@mail.com'
-}
-
-class UpdateAccountRouter {
-  constructor ({
-    updateAccountUseCase
-  } = {}) {
-    this.updateAccountUseCase = updateAccountUseCase
-  }
-
-  async route (httpRequest) {
-    try {
-      const formData = httpRequest.body
-      if (!formData) throw new Error()
-      await this.updateAccountUseCase.update()
-    } catch (error) {
-      return HttpResponse.serverError()
-    }
-  }
 }
 
 const makeSut = () => {
