@@ -31,14 +31,28 @@ const makeLoadUserByEmailRepositoryWithError = () => {
   return new LoadUserByEmailRepositorySpy()
 }
 
+const makeUpdateAccountRepository = () => {
+  class UpdateAccountRepository {
+    async update (accountData = {}) {
+      this.accountData = accountData
+      return true
+    }
+  }
+  const updateAccountRepository = new UpdateAccountRepository()
+  return updateAccountRepository
+}
+
 const makeSut = () => {
   const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+  const updateAccountRepository = makeUpdateAccountRepository()
   const sut = new UpdateAccountUseCase({
-    loadUserByEmailRepository
+    loadUserByEmailRepository,
+    updateAccountRepository
   })
   return {
     sut,
-    loadUserByEmailRepository
+    loadUserByEmailRepository,
+    updateAccountRepository
   }
 }
 

@@ -2,9 +2,11 @@ const { MissingParamError, InvalidParamError } = require('../utils/errors')
 
 module.exports = class UpdateAccountUseCase {
   constructor ({
-    loadUserByEmailRepository
+    loadUserByEmailRepository,
+    updateAccountRepository
   } = {}) {
     this.loadUserByEmailRepository = loadUserByEmailRepository
+    this.updateAccountRepository = updateAccountRepository
   }
 
   async update (accountData = {}) {
@@ -18,6 +20,7 @@ module.exports = class UpdateAccountUseCase {
         { email: ['O email informado já existe'] }
       )
     }
-    return true
+    const updatedAccount = await this.updateAccountRepository.update(accountData)
+    return updatedAccount
   }
 }
