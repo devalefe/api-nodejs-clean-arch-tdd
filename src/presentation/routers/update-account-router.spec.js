@@ -2,13 +2,6 @@ const { ServerError } = require('../errors')
 const { InvalidParamError } = require('../../utils/errors')
 const UpdateAccountRouter = require('./update-account-router')
 
-const updateAccountForm = {
-  firstName: 'John',
-  lastName: 'Doe',
-  phone: '5512987654321',
-  email: 'example@mail.com'
-}
-
 const makeUpdateAccountValidator = () => {
   class UpdateAccountValidatorSpy {
     async validate (formData = {}) {
@@ -48,7 +41,7 @@ const makeUpdateAccountUseCase = () => {
         }
       }
       this.accountData = accountData
-      return true
+      return this.accountData
     }
   }
   const updateAccountUseCaseSpy = new UpdateAccountUseCaseSpy()
@@ -79,6 +72,13 @@ const makeSut = () => {
   }
 }
 
+const updateAccountForm = {
+  firstName: 'John',
+  lastName: 'Doe',
+  phone: '5512987654321',
+  email: 'example@mail.com'
+}
+
 describe('UpdateAccount Router', () => {
   test('Should call UpdateAccountValidator with correct values', async () => {
     const { sut, updateAccountValidator } = makeSut()
@@ -96,6 +96,19 @@ describe('UpdateAccount Router', () => {
     }
     await sut.route(httpResquest)
     expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
+  })
+
+  test('Should return 200 if valid credentials are provided', async () => {
+    const { sut } = makeSut()
+    const httpResquest = {
+      body: Object.assign(
+        {}, updateAccountForm,
+        { firstName: 'Jane' }
+      )
+    }
+    const httpResponse = await sut.route(httpResquest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual(httpResquest.body)
   })
 
   test('Should return 400 if any field is not provided', async () => {
