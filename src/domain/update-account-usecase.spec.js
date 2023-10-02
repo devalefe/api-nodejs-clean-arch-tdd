@@ -1,5 +1,5 @@
 const { MissingParamError, InvalidParamError } = require('../utils/errors')
-const UpdateProfileUseCase = require('./update-profile-usecase')
+const UpdateAccountUseCase = require('./update-account-usecase')
 
 const signUpForm = {
   id: 'valid_id',
@@ -24,7 +24,7 @@ const makeLoadUserByEmailRepository = () => {
 
 const makeSut = () => {
   const loadUserByEmailRepository = makeLoadUserByEmailRepository()
-  const sut = new UpdateProfileUseCase({
+  const sut = new UpdateAccountUseCase({
     loadUserByEmailRepository
   })
   return {
@@ -33,14 +33,14 @@ const makeSut = () => {
   }
 }
 
-describe('Update Profile UseCase', () => {
+describe('Update Account UseCase', () => {
   test('Should return true if account has updated successfuly', async () => {
     const { sut } = makeSut()
     const result = await sut.update(signUpForm)
     expect(result).toBeTruthy()
   })
 
-  test('Should call UpdateProfileUseCase.update with correct values', async () => {
+  test('Should call UpdateAccountUseCase.update with correct values', async () => {
     const { sut } = makeSut()
     const sutSpy = jest.spyOn(sut, 'update')
     await sut.update(signUpForm)
@@ -72,9 +72,9 @@ describe('Update Profile UseCase', () => {
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
     const suts = [
-      new UpdateProfileUseCase(),
-      new UpdateProfileUseCase({}),
-      new UpdateProfileUseCase({
+      new UpdateAccountUseCase(),
+      new UpdateAccountUseCase({}),
+      new UpdateAccountUseCase({
         loadUserByEmailRepository: invalid
       })
     ]
