@@ -1,7 +1,7 @@
 const { MissingParamError, InvalidParamError } = require('../utils/errors')
 const UpdateAccountUseCase = require('./update-account-usecase')
 
-const signUpForm = {
+const updateAccountForm = {
   id: 'valid_id',
   firstName: 'John',
   lastName: 'Doe',
@@ -69,20 +69,20 @@ const makeSut = () => {
 describe('Update Account UseCase', () => {
   test('Should return true if account has updated successfuly', async () => {
     const { sut } = makeSut()
-    const result = await sut.update(signUpForm)
+    const result = await sut.update(updateAccountForm)
     expect(result).toBeTruthy()
   })
 
   test('Should call UpdateAccountUseCase.update with correct values', async () => {
     const { sut } = makeSut()
     const sutSpy = jest.spyOn(sut, 'update')
-    await sut.update(signUpForm)
-    expect(sutSpy).toHaveBeenCalledWith(signUpForm)
+    await sut.update(updateAccountForm)
+    expect(sutSpy).toHaveBeenCalledWith(updateAccountForm)
   })
 
   test('Should throw if no user id is provided', async () => {
     const { sut } = makeSut()
-    const promise = sut.update(Object.assign({}, signUpForm, { id: undefined }))
+    const promise = sut.update(Object.assign({}, updateAccountForm, { id: undefined }))
     await expect(promise).rejects.toThrow(new MissingParamError('id'))
   })
 
@@ -95,7 +95,7 @@ describe('Update Account UseCase', () => {
         email: this.email
       }))
     )
-    const promise = sut.update(Object.assign({}, signUpForm, { id: 'any_id' }))
+    const promise = sut.update(Object.assign({}, updateAccountForm, { id: 'any_id' }))
     await expect(promise).rejects.toThrow(new InvalidParamError(
       'Falha ao atualizar perfil',
       { email: ['O email informado já existe'] }
@@ -119,7 +119,7 @@ describe('Update Account UseCase', () => {
       })
     ]
     for (const sut of suts) {
-      const promise = sut.update(signUpForm)
+      const promise = sut.update(updateAccountForm)
       await expect(promise).rejects.toThrow()
     }
   })
@@ -134,7 +134,7 @@ describe('Update Account UseCase', () => {
       })
     ]
     for (const sut of suts) {
-      const promise = sut.update(signUpForm)
+      const promise = sut.update(updateAccountForm)
       await expect(promise).rejects.toThrow()
     }
   })
