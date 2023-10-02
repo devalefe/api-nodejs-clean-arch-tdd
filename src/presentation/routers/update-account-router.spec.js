@@ -8,10 +8,21 @@ const updateAccountForm = {
   email: 'example@mail.com'
 }
 
+const makeUpdateAccountValidator = () => {
+  class UpdateAccountValidatorSpy {
+    async validate (formData = {}) {
+      this.formData = formData
+      return this.formData
+    }
+  }
+  const updateAccountValidatorSpy = new UpdateAccountValidatorSpy()
+  return updateAccountValidatorSpy
+}
+
 const makeUpdateAccountUseCase = () => {
   class UpdateAccountUseCaseSpy {
-    async update (formData = {}) {
-      this.formData = formData
+    async update (accountData = {}) {
+      this.accountData = accountData
       return true
     }
   }
@@ -21,12 +32,15 @@ const makeUpdateAccountUseCase = () => {
 
 const makeSut = () => {
   const updateAccountUseCase = makeUpdateAccountUseCase()
+  const updateAccountValidator = makeUpdateAccountValidator()
   const sut = new UpdateAccountRouter({
-    updateAccountUseCase
+    updateAccountUseCase,
+    updateAccountValidator
   })
   return {
     sut,
-    updateAccountUseCase
+    updateAccountUseCase,
+    updateAccountValidator
   }
 }
 
@@ -37,7 +51,7 @@ describe('UpdateAccount Router', () => {
       body: updateAccountForm
     }
     await sut.route(httpResquest)
-    expect(updateAccountUseCase.formData).toEqual(updateAccountForm)
+    expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
@@ -58,11 +72,18 @@ describe('UpdateAccount Router', () => {
 
   test('Should throw if invalid dependencies are provided', async () => {
     const invalid = {}
+    const updateAccountUseCase = makeUpdateAccountUseCase()
+    const updateAccountValidator = makeUpdateAccountValidator()
     const suts = [
       new UpdateAccountRouter(),
       new UpdateAccountRouter({}),
       new UpdateAccountRouter({
-        updateAccountUseCase: invalid
+        updateAccountUseCase: invalid,
+        updateAccountValidator
+      }),
+      new UpdateAccountRouter({
+        updateAccountUseCase,
+        updateAccountValidator: invalid
       })
     ]
     for (const sut of suts) {
