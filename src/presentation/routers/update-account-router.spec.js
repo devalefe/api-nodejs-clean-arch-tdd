@@ -19,11 +19,31 @@ const makeUpdateAccountValidator = () => {
   return updateAccountValidatorSpy
 }
 
+const makeUpdateAccountValidatorWithError = () => {
+  class UpdateAccountValidatorSpy {
+    async validate (formData = {}) {
+      throw new Error()
+    }
+  }
+  const updateAccountValidatorSpy = new UpdateAccountValidatorSpy()
+  return updateAccountValidatorSpy
+}
+
 const makeUpdateAccountUseCase = () => {
   class UpdateAccountUseCaseSpy {
     async update (accountData = {}) {
       this.accountData = accountData
       return true
+    }
+  }
+  const updateAccountUseCaseSpy = new UpdateAccountUseCaseSpy()
+  return updateAccountUseCaseSpy
+}
+
+const makeUpdateAccountUseCaseWithError = () => {
+  class UpdateAccountUseCaseSpy {
+    async update (accountData = {}) {
+      throw new Error()
     }
   }
   const updateAccountUseCaseSpy = new UpdateAccountUseCaseSpy()
@@ -93,6 +113,29 @@ describe('UpdateAccount Router', () => {
       new UpdateAccountRouter({
         updateAccountUseCase,
         updateAccountValidator: invalid
+      })
+    ]
+    for (const sut of suts) {
+      const httpResquest = {
+        body: updateAccountForm
+      }
+      const httpResponse = await sut.route(httpResquest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body.message).toBe(new ServerError().message)
+    }
+  })
+
+  test('Should return 500 if any dependecy throws', async () => {
+    const updateAccountUseCase = makeUpdateAccountUseCase()
+    const updateAccountValidator = makeUpdateAccountValidator()
+    const suts = [
+      new UpdateAccountRouter({
+        updateAccountUseCase: makeUpdateAccountUseCaseWithError(),
+        updateAccountValidator
+      }),
+      new UpdateAccountRouter({
+        updateAccountUseCase,
+        updateAccountValidator: makeUpdateAccountValidatorWithError()
       })
     ]
     for (const sut of suts) {
