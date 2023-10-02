@@ -28,4 +28,10 @@ describe('UpdateAccount Validator', () => {
     await sut.validate(updateAccountForm)
     expect(validatorSpy).toHaveBeenCalledWith(updateAccountForm)
   })
+
+  test('Should return values if validate successfuly', async () => {
+    const sut = makeSut()
+    const result = await sut.validate(updateAccountForm)
+    expect(result).toEqual(updateAccountForm)
+  })
 })
