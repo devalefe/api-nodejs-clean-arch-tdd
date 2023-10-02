@@ -68,4 +68,19 @@ describe('Update Profile UseCase', () => {
       { email: ['O email informado já existe'] }
     ))
   })
+
+  test('Should throw if invalid dependencies are provided', async () => {
+    const invalid = {}
+    const suts = [
+      new UpdateProfileUseCase(),
+      new UpdateProfileUseCase({}),
+      new UpdateProfileUseCase({
+        loadUserByEmailRepository: invalid
+      })
+    ]
+    for (const sut of suts) {
+      const promise = sut.update(signUpForm)
+      await expect(promise).rejects.toThrow()
+    }
+  })
 })
