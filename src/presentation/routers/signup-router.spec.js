@@ -32,8 +32,7 @@ const makeSignUpValidator = () => {
         'lastName',
         'phone',
         'email',
-        'password',
-        'passwordConfirmation'
+        'password'
       ]
       for (const field of requiredFields) {
         if (!formData[field]) {
@@ -79,8 +78,7 @@ const signUpForm = {
   lastName: 'Doe',
   phone: '5512987654321',
   email: 'test@mail.com',
-  password: 'TestUpperLower1!',
-  passwordConfirmation: 'TestUpperLower1!'
+  password: 'TestUpperLower1!'
 }
 
 describe('SignUp Router', () => {

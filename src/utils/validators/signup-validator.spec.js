@@ -6,8 +6,7 @@ const signUpForm = {
   lastName: 'Doe',
   phone: '5512987654321',
   email: 'test@mail.com',
-  password: 'TestUpperLower1!',
-  passwordConfirmation: 'TestUpperLower1!'
+  password: 'TestUpperLower1!'
 }
 
 const makeSut = () => {
