@@ -21,4 +21,11 @@ describe('UpdateAccount Validator', () => {
       { phone: ['O número de telefone é obrigatório'] }
     ))
   })
+
+  test('Should call UpdateAccountValidator.validate with correct values', async () => {
+    const sut = new UpdateAccountValidator()
+    const validatorSpy = jest.spyOn(sut, 'validate')
+    await sut.validate(updateAccountForm)
+    expect(validatorSpy).toHaveBeenCalledWith(updateAccountForm)
+  })
 })
