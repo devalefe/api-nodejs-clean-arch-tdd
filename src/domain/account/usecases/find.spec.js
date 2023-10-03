@@ -1,5 +1,5 @@
-const { MissingParamError } = require('../../utils/errors')
-const FindAccountUseCase = require('./find-account-usecase')
+const { MissingParamError } = require('../../../utils/errors')
+const FindAccountUseCase = require('./find')
 
 const accountFounded = {
   id: 'valid_id',

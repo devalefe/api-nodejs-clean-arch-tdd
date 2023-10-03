@@ -1,5 +1,5 @@
-const { MissingParamError, InvalidParamError } = require('../../utils/errors')
-const UpdateAccountUseCase = require('./update-account-usecase')
+const { MissingParamError, InvalidParamError } = require('../../../utils/errors')
+const UpdateAccountUseCase = require('./update')
 
 const updateAccountForm = {
   id: 'valid_id',
