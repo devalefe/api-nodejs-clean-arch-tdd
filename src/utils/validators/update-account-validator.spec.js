@@ -17,7 +17,7 @@ describe('UpdateAccount Validator', () => {
     const sut = makeSut()
     const promise = sut.validate(Object.assign({}, updateAccountForm, { phone: undefined }))
     await expect(promise).rejects.toThrow(new InvalidParamError(
-      'Erro ao validar os campos',
+      'Falha ao validar os campos',
       { phone: ['O número de telefone é obrigatório'] }
     ))
   })

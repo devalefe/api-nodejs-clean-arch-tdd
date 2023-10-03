@@ -33,7 +33,7 @@ module.exports = class UpdateAccountValidator {
         Object.assign(serializedErrors, { [path]: errors })
       )
       throw new InvalidParamError(
-        'Erro ao validar os campos',
+        'Falha ao validar os campos',
         serializedErrors
       )
     }
