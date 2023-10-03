@@ -108,7 +108,7 @@ describe('UpdateAccount Router', () => {
     }
     const httpResponse = await sut.route(httpResquest)
     expect(httpResponse.statusCode).toBe(200)
-    expect(httpResponse.body).toEqual(httpResquest.body)
+    expect(httpResponse.body.result).toEqual(httpResquest.body)
   })
 
   test('Should return 400 if any field is not provided', async () => {

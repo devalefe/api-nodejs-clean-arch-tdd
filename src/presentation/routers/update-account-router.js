@@ -15,7 +15,10 @@ module.exports = class UpdateAccountRouter {
       if (!formData) throw new Error()
       const accountData = await this.updateAccountValidator.validate(formData)
       const updatedAccount = await this.updateAccountUseCase.update(accountData)
-      return HttpResponse.ok(updatedAccount)
+      return HttpResponse.ok({
+        message: 'Sucesso ao atualizar',
+        result: updatedAccount
+      })
     } catch (error) {
       if (error.name === 'InvalidParamError') {
         return HttpResponse.badRequest({
