@@ -36,7 +36,8 @@ const makeSut = () => {
     findAccountByIdRepository
   })
   return {
-    sut
+    sut,
+    findAccountByIdRepository
   }
 }
 
@@ -45,6 +46,13 @@ describe('ViewAccount Use Case', () => {
     const { sut } = makeSut()
     const account = await sut.find('valid_id')
     expect(account).toEqual(accountFounded)
+  })
+
+  test('Should return null if no account is founded', async () => {
+    const { sut, findAccountByIdRepository } = makeSut()
+    jest.spyOn(findAccountByIdRepository, 'find').mockReturnValueOnce(new Promise(resolve => resolve(null)))
+    const account = await sut.find('valid_id')
+    expect(account).toBeNull()
   })
 
   test('Should call FindAccountUseCase.find with correct id', async () => {
