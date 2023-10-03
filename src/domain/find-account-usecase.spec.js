@@ -29,6 +29,16 @@ const makeFindAccountByIdRepository = () => {
   return findAccountByIdRepositorySpy
 }
 
+const makeFindAccountByIdRepositoryWithError = () => {
+  class FindAccountByIdRepositorySpy {
+    async find (accountId) {
+      throw new Error()
+    }
+  }
+  const findAccountByIdRepositorySpy = new FindAccountByIdRepositorySpy()
+  return findAccountByIdRepositorySpy
+}
+
 const makeSut = () => {
   const findAccountByIdRepository = makeFindAccountByIdRepository()
   const sut = new FindAccountUseCase({
@@ -68,6 +78,18 @@ describe('ViewAccount Use Case', () => {
       new FindAccountUseCase({}),
       new FindAccountUseCase({
         findAccountByIdRepository: invalid
+      })
+    ]
+    for (const sut of suts) {
+      const promise = sut.find()
+      await expect(promise).rejects.toThrow()
+    }
+  })
+
+  test('Should throw if any dependency throws', async () => {
+    const suts = [
+      new FindAccountUseCase({
+        findAccountByIdRepository: makeFindAccountByIdRepositoryWithError()
       })
     ]
     for (const sut of suts) {
