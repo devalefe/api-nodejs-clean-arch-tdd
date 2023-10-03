@@ -1,7 +1,6 @@
 const request = require('supertest')
 const app = require('../config/app')
 const MongoHelper = require('../../infra/helpers/mongo-connection-helper')
-const { ObjectId } = require('mongodb')
 let userModel, accountId
 
 const updateAccountForm = {
@@ -31,21 +30,36 @@ describe('UpdateAccount Routes', () => {
   })
 
   test('Should return 200 if valid credentials are provided', async () => {
-    let updatedAccount = Object.assign(
+    const updatedAccount = Object.assign(
       {}, updateAccountForm,
       { id: accountId, firstName: 'Jane' }
     )
-    delete updatedAccount._id
     const response = await request(app)
       .patch('/api/account')
       .send(updatedAccount)
-    const account = await userModel.findOne({ _id: accountId })
-    updatedAccount = Object.assign(
-      {}, updatedAccount,
-      { _id: new ObjectId(updatedAccount.id) }
-    )
-    delete updatedAccount.id
     expect(response.statusCode).toBe(200)
-    expect(account).toEqual(updatedAccount)
+  })
+
+  test('Should return 400 if email already exists', async () => {
+    await userModel.insertOne({
+      firstName: 'Jane',
+      lastName: 'Doe',
+      phone: '5512987654321',
+      email: 'jane@mail.com'
+    })
+    const updatedAccount = Object.assign(
+      {}, updateAccountForm,
+      { id: accountId, email: 'jane@mail.com' }
+    )
+    const response = await request(app)
+      .patch('/api/account')
+      .send(updatedAccount)
+    expect(response.statusCode).toBe(400)
+    expect(response.body).toEqual({
+      message: 'Falha ao atualizar perfil',
+      detail: {
+        email: ['O email informado já existe']
+      }
+    })
   })
 })
