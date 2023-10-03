@@ -10,7 +10,7 @@ module.exports = class UpdateAccountRepository {
       throw new MissingParamError('accountData')
     }
     const accountModel = await MongoHelper.getCollection('users')
-    await accountModel.updateOne({
+    const result = await accountModel.updateOne({
       _id: accountId
     }, {
       $set: {
@@ -20,5 +20,6 @@ module.exports = class UpdateAccountRepository {
         email: accountData.email
       }
     })
+    return result
   }
 }

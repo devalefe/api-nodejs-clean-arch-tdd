@@ -14,13 +14,13 @@ module.exports = class UpdateAccountUseCase {
       throw new MissingParamError('id')
     }
     const accountLoaded = await this.loadUserByEmailRepository.load(accountData.email)
-    if (accountLoaded && accountLoaded._id !== accountData.id) {
+    if (accountLoaded && accountLoaded.id !== accountData.id) {
       throw new InvalidParamError(
         'Falha ao atualizar perfil',
         { email: ['O email informado já existe'] }
       )
     }
-    const updatedAccount = await this.updateAccountRepository.update(accountData)
+    const updatedAccount = await this.updateAccountRepository.update(accountData.id, accountData)
     return updatedAccount
   }
 }

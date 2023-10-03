@@ -23,8 +23,8 @@ class SignInUseCase {
     const user = await this.loadUserByEmailRepository.load(email)
     const credentialsMatch = user && await this.encrypter.compare(password, user.password)
     if (credentialsMatch) {
-      const accessToken = await this.tokenGenerator.generate(user._id)
-      await this.updateAccessTokenRepository.update(user._id, accessToken)
+      const accessToken = await this.tokenGenerator.generate(user.id)
+      await this.updateAccessTokenRepository.update(user.id, accessToken)
       return accessToken
     }
     return null

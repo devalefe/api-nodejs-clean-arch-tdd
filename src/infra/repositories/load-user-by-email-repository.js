@@ -14,6 +14,11 @@ module.exports = class LoadUserByEmailRepository {
         password: true
       }
     })
-    return user
+    if (user) {
+      const parsedData = Object.assign({}, user, { id: user._id.toString() })
+      delete parsedData._id
+      return parsedData
+    }
+    return null
   }
 }
