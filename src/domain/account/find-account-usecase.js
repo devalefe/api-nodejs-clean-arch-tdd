@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../utils/errors')
+const { MissingParamError } = require('../../utils/errors')
 
 module.exports = class FindAccountUseCase {
   constructor ({

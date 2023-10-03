@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../utils/errors')
+const { MissingParamError } = require('../../utils/errors')
 const FindAccountUseCase = require('./find-account-usecase')
 
 const accountFounded = {

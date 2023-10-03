@@ -1,4 +1,4 @@
-const UpdateAccountUseCase = require('../../domain/update-account-usecase')
+const UpdateAccountUseCase = require('../../domain/account/update-account-usecase')
 const UpdateAccountValidator = require('../../utils/validators/update-account-validator')
 const UpdateAccountRouter = require('../../presentation/routers/update-account-router')
 const LoadUserByEmailRepository = require('../../infra/repositories/load-user-by-email-repository')
