@@ -1,15 +1,38 @@
 const { MissingParamError } = require('../utils/errors')
 
 class FindAccountUseCase {
+  constructor ({
+    findAccountByIdRepository
+  } = {}) {
+    this.findAccountByIdRepository = findAccountByIdRepository
+  }
+
   async find (accountId) {
     if (!accountId) {
       throw new MissingParamError('accountId')
     }
+    await this.findAccountByIdRepository.find(accountId)
   }
 }
 
+const makeFindAccountByIdRepository = () => {
+  class FindAccountByIdRepositorySpy {
+    async find (accountId) {
+      this.accountId = accountId
+      return {
+        _id: this.accountId
+      }
+    }
+  }
+  const findAccountByIdRepositorySpy = new FindAccountByIdRepositorySpy()
+  return findAccountByIdRepositorySpy
+}
+
 const makeSut = () => {
-  const sut = new FindAccountUseCase()
+  const findAccountByIdRepository = makeFindAccountByIdRepository()
+  const sut = new FindAccountUseCase({
+    findAccountByIdRepository
+  })
   return {
     sut
   }
@@ -27,5 +50,20 @@ describe('ViewAccount Use Case', () => {
     const { sut } = makeSut()
     const promise = sut.find()
     await expect(promise).rejects.toThrow(new MissingParamError('accountId'))
+  })
+
+  test('Should throw if invalid params are provided', async () => {
+    const invalid = {}
+    const suts = [
+      new FindAccountUseCase(),
+      new FindAccountUseCase({}),
+      new FindAccountUseCase({
+        findAccountByIdRepository: invalid
+      })
+    ]
+    for (const sut of suts) {
+      const promise = sut.find()
+      await expect(promise).rejects.toThrow()
+    }
   })
 })
