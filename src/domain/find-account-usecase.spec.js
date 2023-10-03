@@ -75,7 +75,7 @@ describe('ViewAccount Use Case', () => {
     await expect(promise).rejects.toThrow(new MissingParamError('accountId'))
   })
 
-  test('Should throw if invalid params are provided', async () => {
+  test('Should throw if invalid dependecies are provided', async () => {
     const invalid = {}
     const suts = [
       new FindAccountUseCase(),
