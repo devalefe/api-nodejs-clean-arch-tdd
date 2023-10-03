@@ -1,4 +1,5 @@
 const { MissingParamError } = require('../utils/errors')
+const FindAccountUseCase = require('./find-account-usecase')
 
 const accountFounded = {
   id: 'valid_id',
@@ -6,22 +7,6 @@ const accountFounded = {
   lastName: 'Doe',
   phone: '5512987654321',
   email: 'example@mail.com'
-}
-
-class FindAccountUseCase {
-  constructor ({
-    findAccountByIdRepository
-  } = {}) {
-    this.findAccountByIdRepository = findAccountByIdRepository
-  }
-
-  async find (accountId) {
-    if (!accountId) {
-      throw new MissingParamError('accountId')
-    }
-    const account = await this.findAccountByIdRepository.find(accountId)
-    return account
-  }
 }
 
 const makeFindAccountByIdRepository = () => {
