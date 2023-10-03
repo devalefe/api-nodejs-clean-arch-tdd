@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb')
 const { MissingParamError } = require('../../utils/errors')
 const MongoHelper = require('../helpers/mongo-connection-helper')
 
@@ -11,7 +12,7 @@ module.exports = class UpdateAccountRepository {
     }
     const accountModel = await MongoHelper.getCollection('users')
     const result = await accountModel.updateOne({
-      _id: accountId
+      _id: new ObjectId(accountId)
     }, {
       $set: {
         firstName: accountData.firstName,
@@ -20,6 +21,6 @@ module.exports = class UpdateAccountRepository {
         email: accountData.email
       }
     })
-    return result
+    return result.modifiedCount
   }
 }
