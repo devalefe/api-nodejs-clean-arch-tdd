@@ -38,6 +38,22 @@ describe('UpdateAccount Routes', () => {
       .patch('/api/account')
       .send(updatedAccount)
     expect(response.statusCode).toBe(200)
+    expect(response.body.message).toBe('Sucesso ao atualizar')
+  })
+
+  test('Should return 400 if invalid credentials are provided', async () => {
+    delete updateAccountForm._id
+    for (const field of Object.keys(updateAccountForm)) {
+      const response = await request(app)
+        .patch('/api/account')
+        .send(Object.assign(
+          {}, updateAccountForm,
+          { id: accountId, [field]: undefined }
+        ))
+      expect(response.statusCode).toBe(400)
+      expect(response.body.message).toBe('Falha ao validar os campos')
+      expect(response.body.detail[field]).toBeDefined()
+    }
   })
 
   test('Should return 400 if email already exists', async () => {
