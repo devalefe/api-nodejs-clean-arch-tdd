@@ -11,7 +11,8 @@ class FindAccountUseCase {
     if (!accountId) {
       throw new MissingParamError('accountId')
     }
-    await this.findAccountByIdRepository.find(accountId)
+    const account = await this.findAccountByIdRepository.find(accountId)
+    return account
   }
 }
 
@@ -39,6 +40,14 @@ const makeSut = () => {
 }
 
 describe('ViewAccount Use Case', () => {
+  test('Should return an account if valid accountId is provided', async () => {
+    const { sut } = makeSut()
+    const account = await sut.find('valid_id')
+    expect(account).toEqual({
+      _id: 'valid_id'
+    })
+  })
+
   test('Should call FindAccountUseCase.find with correct id', async () => {
     const { sut } = makeSut()
     const sutSpy = jest.spyOn(sut, 'find')
