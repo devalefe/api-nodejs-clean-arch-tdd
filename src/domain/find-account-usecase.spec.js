@@ -1,5 +1,13 @@
 const { MissingParamError } = require('../utils/errors')
 
+const accountFounded = {
+  id: 'valid_id',
+  firstName: 'John',
+  lastName: 'Doe',
+  phone: '5512987654321',
+  email: 'example@mail.com'
+}
+
 class FindAccountUseCase {
   constructor ({
     findAccountByIdRepository
@@ -20,9 +28,7 @@ const makeFindAccountByIdRepository = () => {
   class FindAccountByIdRepositorySpy {
     async find (accountId) {
       this.accountId = accountId
-      return {
-        _id: this.accountId
-      }
+      return accountFounded
     }
   }
   const findAccountByIdRepositorySpy = new FindAccountByIdRepositorySpy()
@@ -53,9 +59,7 @@ describe('ViewAccount Use Case', () => {
   test('Should return an account if valid accountId is provided', async () => {
     const { sut } = makeSut()
     const account = await sut.find('valid_id')
-    expect(account).toEqual({
-      _id: 'valid_id'
-    })
+    expect(account).toEqual(accountFounded)
   })
 
   test('Should call FindAccountUseCase.find with correct id', async () => {
