@@ -14,22 +14,7 @@ jest.mock('jsonwebtoken', () => ({
 
 const jwt = require('jsonwebtoken')
 const MissingParamError = require('../errors/missing-param-error')
-
-class TokenValidator {
-  constructor (secret) {
-    this.secret = secret
-  }
-
-  async validate (token) {
-    if (!this.secret) {
-      throw new MissingParamError('secret')
-    }
-    if (!token) {
-      throw new MissingParamError('token')
-    }
-    return jwt.verify(token, this.secret)
-  }
-}
+const TokenValidator = require('./token-validator')
 
 const makeSut = () => {
   const sut = new TokenValidator('secret')
