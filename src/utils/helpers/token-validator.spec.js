@@ -27,7 +27,7 @@ class TokenValidator {
     if (!token) {
       throw new MissingParamError('token')
     }
-    return jwt.verify(token)
+    return jwt.verify(token, this.secret)
   }
 }
 
@@ -39,10 +39,11 @@ const makeSut = () => {
 }
 
 describe('Token Validator', () => {
-  test('Should call TokenValidator.validate with correct token', async () => {
+  test('Should call TokenValidator.validate with correct values', async () => {
     const { sut } = makeSut()
     await sut.validate('any_token')
     expect(jwt.token).toBe('any_token')
+    expect(jwt.secret).toBe(sut.secret)
   })
 
   test('Should throw if no secret is provided', async () => {
