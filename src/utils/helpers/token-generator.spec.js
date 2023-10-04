@@ -19,14 +19,14 @@ const makeSut = () => {
 }
 
 describe('Token Generator', () => {
-  test('Should return null of JWT returns null', async () => {
+  test('Should return null if JWT returns null', async () => {
     const sut = makeSut()
     jwt.token = null
     const token = await sut.generate('any_id')
     expect(token).toBeNull()
   })
 
-  test('Should return an token if JWT returns token', async () => {
+  test('Should return an token if JWT returns an token', async () => {
     const sut = makeSut()
     const token = await sut.generate('any_id')
     expect(token).toBe(jwt.token)
@@ -45,7 +45,7 @@ describe('Token Generator', () => {
     expect(promise).rejects.toThrow(new MissingParamError('secret'))
   })
 
-  test('Should throw if no secret is provided', async () => {
+  test('Should throw if no id is provided', async () => {
     const sut = makeSut()
     const promise = sut.generate()
     expect(promise).rejects.toThrow(new MissingParamError('id'))
