@@ -8,7 +8,7 @@ jest.mock('jsonwebtoken', () => ({
   verify (token, secret) {
     this.token = token
     this.secret = secret
-    return this.token
+    return this.payload
   }
 }))
 
@@ -39,6 +39,12 @@ const makeSut = () => {
 }
 
 describe('Token Validator', () => {
+  test('Should return an payload if jwt returns an payload', async () => {
+    const { sut } = makeSut()
+    const payload = await sut.validate('valid_token')
+    expect(payload).toEqual(jwt.payload)
+  })
+
   test('Should call TokenValidator.validate with correct values', async () => {
     const { sut } = makeSut()
     await sut.validate('any_token')
