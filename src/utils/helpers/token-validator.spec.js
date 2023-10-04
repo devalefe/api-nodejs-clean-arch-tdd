@@ -24,15 +24,22 @@ class TokenValidator {
   }
 }
 
+const makeSut = () => {
+  const sut = new TokenValidator('secret')
+  return {
+    sut
+  }
+}
+
 describe('Token Validator', () => {
   test('Should call TokenValidator.validate with correct token', async () => {
-    const sut = new TokenValidator()
+    const { sut } = makeSut()
     await sut.validate('any_token')
     expect(jwt.token).toBe('any_token')
   })
 
   test('Should throw if no token is provided', async () => {
-    const sut = new TokenValidator()
+    const { sut } = makeSut()
     const promise = sut.validate()
     await expect(promise).rejects.toThrow(new MissingParamError('token'))
   })
