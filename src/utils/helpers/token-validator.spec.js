@@ -63,4 +63,11 @@ describe('Token Validator', () => {
     const promise = sut.validate()
     await expect(promise).rejects.toThrow(new MissingParamError('token'))
   })
+
+  test('Should throw if jwt throws', async () => {
+    const { sut } = makeSut()
+    jest.spyOn(sut, 'validate').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    const promise = sut.validate('any_token')
+    await expect(promise).rejects.toThrow()
+  })
 })
