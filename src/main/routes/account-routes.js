@@ -3,5 +3,5 @@ const UpdateAccountRouterComposer = require('../composers/update-account-router-
 
 module.exports = (router) => {
   const updateAccountRouter = UpdateAccountRouterComposer.compose()
-  router.patch('/account', ExpressRouterAdapter.adapt(updateAccountRouter))
+  router.put('/account', ExpressRouterAdapter.adapt(updateAccountRouter))
 }
