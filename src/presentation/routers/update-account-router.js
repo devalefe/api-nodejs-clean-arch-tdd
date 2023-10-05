@@ -36,6 +36,12 @@ module.exports = class UpdateAccountRouter {
           detail: error.detail
         })
       }
+      if (error.name === 'MissingParamError') {
+        return HttpResponse.badRequest({
+          message: error.message,
+          detail: error.detail
+        })
+      }
       if (
         error.name === 'JsonWebTokenError' ||
         error.name === 'TokenExpiredError'
