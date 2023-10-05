@@ -20,6 +20,20 @@ const makeTokenValidator = () => {
   return tokenValidator
 }
 
+const makeTokenValidatorWithError = () => {
+  class TokenValidator {
+    constructor (secret) {
+      this.secret = secret
+    }
+
+    async validate (token) {
+      throw new Error()
+    }
+  }
+  const tokenValidator = new TokenValidator('')
+  return tokenValidator
+}
+
 const makeUpdateAccountValidator = () => {
   class UpdateAccountValidatorSpy {
     async validate (formData = {}) {
@@ -242,14 +256,22 @@ describe('UpdateAccount Router', () => {
   test('Should return 500 if any dependecy throws', async () => {
     const updateAccountUseCase = makeUpdateAccountUseCase()
     const updateAccountValidator = makeUpdateAccountValidator()
+    const tokenValidator = makeTokenValidator()
     const suts = [
       new UpdateAccountRouter({
         updateAccountUseCase: makeUpdateAccountUseCaseWithError(),
-        updateAccountValidator
+        updateAccountValidator,
+        tokenValidator
       }),
       new UpdateAccountRouter({
         updateAccountUseCase,
-        updateAccountValidator: makeUpdateAccountValidatorWithError()
+        updateAccountValidator: makeUpdateAccountValidatorWithError(),
+        tokenValidator
+      }),
+      new UpdateAccountRouter({
+        updateAccountUseCase,
+        updateAccountValidator,
+        tokenValidator: makeTokenValidatorWithError()
       })
     ]
     for (const sut of suts) {
