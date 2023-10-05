@@ -1,3 +1,4 @@
+const { MissingParamError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 module.exports = class UpdateAccountRouter {
@@ -13,10 +14,15 @@ module.exports = class UpdateAccountRouter {
 
   async route (httpRequest) {
     try {
-      const authToken = httpRequest.headers.authorization
+      const headers = httpRequest.headers
+      if (!headers || !headers.authorization) {
+        throw new MissingParamError('headers.authorization')
+      }
       const formData = httpRequest.body
-      if (!authToken || !formData) throw new Error()
-      const { id } = await this.tokenValidator.validate(authToken)
+      if (!formData) {
+        throw new MissingParamError('body')
+      }
+      const { id } = await this.tokenValidator.validate(headers.authorization)
       const accountData = await this.updateAccountValidator.validate(formData)
       const updatedAccount = await this.updateAccountUseCase.update(id, accountData)
       return HttpResponse.ok({
@@ -29,6 +35,9 @@ module.exports = class UpdateAccountRouter {
           message: error.message,
           detail: error.detail
         })
+      }
+      if (error.name === 'JsonWebTokenError') {
+        return HttpResponse.unauthorizedError()
       }
       return HttpResponse.serverError()
     }
