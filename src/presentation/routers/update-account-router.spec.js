@@ -9,6 +9,13 @@ class JsonWebTokenErrorStub extends Error {
   }
 }
 
+class TokenExpiredErrorStub extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'TokenExpiredError'
+  }
+}
+
 const makeTokenValidator = () => {
   class TokenValidator {
     constructor (secret) {
@@ -213,13 +220,19 @@ describe('UpdateAccount Router', () => {
       body: updateAccountForm
     }
     const { sut, tokenValidator } = makeSut()
-    jest.spyOn(tokenValidator, 'validate')
-      .mockReturnValueOnce(new Promise((resolve, reject) =>
-        reject(new JsonWebTokenErrorStub())
-      ))
-    const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.statusCode).toBe(401)
-    expect(httpResponse.body.message).toBe(new UnauthorizedError().message)
+    const stubs = [
+      new JsonWebTokenErrorStub(),
+      new TokenExpiredErrorStub()
+    ]
+    for (const stub of stubs) {
+      jest.spyOn(tokenValidator, 'validate')
+        .mockReturnValueOnce(new Promise((resolve, reject) =>
+          reject(stub)
+        ))
+      const httpResponse = await sut.route(httpRequest)
+      expect(httpResponse.statusCode).toBe(401)
+      expect(httpResponse.body.message).toBe(new UnauthorizedError().message)
+    }
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
