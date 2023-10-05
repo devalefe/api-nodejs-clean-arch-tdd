@@ -11,7 +11,7 @@ const makeTokenValidator = () => {
     async validate (token) {
       this.token = token
       const payload = {
-        id: 'any_id'
+        id: 'valid_id'
       }
       return payload
     }
@@ -112,7 +112,7 @@ const makeSut = () => {
 }
 
 const httpHeaders = {
-  authorization: 'any_token'
+  authorization: 'valid_token'
 }
 
 const updateAccountForm = {
@@ -141,10 +141,10 @@ describe('UpdateAccount Router', () => {
     }
     jest.spyOn(tokenValidator, 'validate')
       .mockReturnValueOnce(
-        new Promise(resolve => resolve({ id: 'valid_id' }))
+        new Promise(resolve => resolve({ id: 'any_id' }))
       )
     await sut.route(httpRequest)
-    expect(updateAccountUseCase.accountId).toEqual('valid_id')
+    expect(updateAccountUseCase.accountId).toEqual('any_id')
     expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
   })
 
