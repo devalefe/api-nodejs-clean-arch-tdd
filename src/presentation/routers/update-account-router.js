@@ -30,13 +30,10 @@ module.exports = class UpdateAccountRouter {
         result: updatedAccount
       })
     } catch (error) {
-      if (error.name === 'InvalidParamError') {
-        return HttpResponse.badRequest({
-          message: error.message,
-          detail: error.detail
-        })
-      }
-      if (error.name === 'MissingParamError') {
+      if (
+        error.name === 'InvalidParamError' ||
+        error.name === 'MissingParamError'
+      ) {
         return HttpResponse.badRequest({
           message: error.message,
           detail: error.detail
