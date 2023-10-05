@@ -1,8 +1,9 @@
 const { MissingParamError, InvalidParamError } = require('../../../utils/errors')
 const UpdateAccountUseCase = require('./update')
 
+const accountId = 'valid_id'
+
 const updateAccountForm = {
-  id: 'valid_id',
   firstName: 'John',
   lastName: 'Doe',
   phone: '+55 00 0000-0000',
@@ -33,7 +34,8 @@ const makeLoadUserByEmailRepositoryWithError = () => {
 
 const makeUpdateAccountRepository = () => {
   class UpdateAccountRepository {
-    async update (accountData = {}) {
+    async update (accountId, accountData = {}) {
+      this.accountId = accountId
       this.accountData = accountData
       return true
     }
@@ -44,7 +46,7 @@ const makeUpdateAccountRepository = () => {
 
 const makeUpdateAccountRepositoryWithError = () => {
   class UpdateAccountRepository {
-    async update (accountData = {}) {
+    async update (accountId, accountData = {}) {
       throw new Error()
     }
   }
@@ -69,33 +71,33 @@ const makeSut = () => {
 describe('Update Account UseCase', () => {
   test('Should return true if account has updated successfuly', async () => {
     const { sut } = makeSut()
-    const result = await sut.update(updateAccountForm)
+    const result = await sut.update(accountId, updateAccountForm)
     expect(result).toBeTruthy()
   })
 
   test('Should call UpdateAccountUseCase.update with correct values', async () => {
     const { sut } = makeSut()
     const sutSpy = jest.spyOn(sut, 'update')
-    await sut.update(updateAccountForm)
-    expect(sutSpy).toHaveBeenCalledWith(updateAccountForm)
+    await sut.update(accountId, updateAccountForm)
+    expect(sutSpy).toHaveBeenCalledWith(accountId, updateAccountForm)
   })
 
   test('Should throw if no user id is provided', async () => {
     const { sut } = makeSut()
-    const promise = sut.update(Object.assign({}, updateAccountForm, { id: undefined }))
+    const promise = sut.update(undefined, updateAccountForm)
     await expect(promise).rejects.toThrow(new MissingParamError('id'))
   })
 
   test('Should throw if email already exists', async () => {
     const { sut, loadUserByEmailRepository } = makeSut()
-    loadUserByEmailRepository._id = 'any_id'
+    loadUserByEmailRepository._id = 'valid_id'
     jest.spyOn(loadUserByEmailRepository, 'load').mockReturnValueOnce(
       new Promise(resolve => resolve({
         _id: this._id,
         email: this.email
       }))
     )
-    const promise = sut.update(Object.assign({}, updateAccountForm, { id: 'any_id' }))
+    const promise = sut.update('valid_id', updateAccountForm)
     await expect(promise).rejects.toThrow(new InvalidParamError(
       'Falha ao atualizar perfil',
       { email: ['O email informado já existe'] }
