@@ -1,5 +1,5 @@
 const { ServerError } = require('../errors')
-const { InvalidParamError } = require('../../utils/errors')
+const { InvalidParamError, MissingParamError } = require('../../utils/errors')
 const UpdateAccountRouter = require('./update-account-router')
 
 const makeTokenValidator = () => {
@@ -57,7 +57,10 @@ const makeUpdateAccountValidatorWithError = () => {
 
 const makeUpdateAccountUseCase = () => {
   class UpdateAccountUseCaseSpy {
-    async update (accountData = {}) {
+    async update (accountId, accountData = {}) {
+      if (!accountId) {
+        throw new MissingParamError('id')
+      }
       const requiredFields = [
         'firstName',
         'lastName',
@@ -72,6 +75,7 @@ const makeUpdateAccountUseCase = () => {
           )
         }
       }
+      this.accountId = accountId
       this.accountData = accountData
       return this.accountData
     }
@@ -130,12 +134,17 @@ describe('UpdateAccount Router', () => {
   })
 
   test('Should call UpdateAccountUserCase with correct values', async () => {
-    const { sut, updateAccountUseCase } = makeSut()
+    const { sut, updateAccountUseCase, tokenValidator } = makeSut()
     const httpRequest = {
       headers: httpHeaders,
       body: updateAccountForm
     }
+    jest.spyOn(tokenValidator, 'validate')
+      .mockReturnValueOnce(
+        new Promise(resolve => resolve({ id: 'valid_id' }))
+      )
     await sut.route(httpRequest)
+    expect(updateAccountUseCase.accountId).toEqual('valid_id')
     expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
   })
 
