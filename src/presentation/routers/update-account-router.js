@@ -16,7 +16,7 @@ module.exports = class UpdateAccountRouter {
     try {
       const headers = httpRequest.headers
       if (!headers || !headers.authorization) {
-        throw new MissingParamError('headers.authorization')
+        throw new MissingParamError('token')
       }
       const formData = httpRequest.body
       if (!formData) {
@@ -36,7 +36,10 @@ module.exports = class UpdateAccountRouter {
           detail: error.detail
         })
       }
-      if (error.name === 'JsonWebTokenError') {
+      if (
+        error.name === 'JsonWebTokenError' ||
+        error.name === 'TokenExpiredError'
+      ) {
         return HttpResponse.unauthorizedError()
       }
       return HttpResponse.serverError()
