@@ -208,16 +208,24 @@ describe('UpdateAccount Router', () => {
     const invalid = {}
     const updateAccountUseCase = makeUpdateAccountUseCase()
     const updateAccountValidator = makeUpdateAccountValidator()
+    const tokenValidator = makeTokenValidator()
     const suts = [
       new UpdateAccountRouter(),
       new UpdateAccountRouter({}),
       new UpdateAccountRouter({
         updateAccountUseCase: invalid,
-        updateAccountValidator
+        updateAccountValidator,
+        tokenValidator
       }),
       new UpdateAccountRouter({
         updateAccountUseCase,
-        updateAccountValidator: invalid
+        updateAccountValidator: invalid,
+        tokenValidator
+      }),
+      new UpdateAccountRouter({
+        updateAccountUseCase,
+        updateAccountValidator,
+        tokenValidator: invalid
       })
     ]
     for (const sut of suts) {
