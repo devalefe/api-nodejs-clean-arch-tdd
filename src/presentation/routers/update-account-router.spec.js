@@ -242,24 +242,24 @@ describe('UpdateAccount Router', () => {
     expect(httpResponse.body.message).toBe(new ServerError().message)
   })
 
-  test('Should return 500 if httpRequest has no body', async () => {
+  test('Should return 400 if httpRequest has no body', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       headers: httpHeaders,
       body: undefined
     }
     const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.body.message).toBe(new ServerError().message)
+    expect(httpResponse.body.message).toBe(new MissingParamError('body').message)
   })
 
-  test('Should return 500 if httpRequest has no authorization header', async () => {
+  test('Should return 400 if httpRequest has no authorization header', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       headers: undefined,
       body: updateAccountForm
     }
     const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.body.message).toBe(new ServerError().message)
+    expect(httpResponse.body.message).toBe(new MissingParamError('token').message)
   })
 
   test('Should return 500 if invalid dependencies are provided', async () => {
