@@ -13,6 +13,7 @@ module.exports = class TokenValidator {
     if (!token) {
       throw new MissingParamError('token')
     }
+    token = token.includes('Bearer') ? token.split(' ')[1] : token
     return jwt.verify(token, this.secret)
   }
 }
