@@ -16,9 +16,9 @@ module.exports = class UpdateAccountRouter {
       const authToken = httpRequest.headers.authorization
       const formData = httpRequest.body
       if (!authToken || !formData) throw new Error()
-      await this.tokenValidator.validate(authToken)
+      const { id } = await this.tokenValidator.validate(authToken)
       const accountData = await this.updateAccountValidator.validate(formData)
-      const updatedAccount = await this.updateAccountUseCase.update(accountData)
+      const updatedAccount = await this.updateAccountUseCase.update(id, accountData)
       return HttpResponse.ok({
         message: 'Sucesso ao atualizar',
         result: updatedAccount
