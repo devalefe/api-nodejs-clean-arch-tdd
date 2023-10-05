@@ -2,6 +2,24 @@ const { ServerError } = require('../errors')
 const { InvalidParamError } = require('../../utils/errors')
 const UpdateAccountRouter = require('./update-account-router')
 
+const makeTokenValidator = () => {
+  class TokenValidator {
+    constructor (secret) {
+      this.secret = secret
+    }
+
+    async validate (token) {
+      this.token = token
+      const payload = {
+        id: 'any_id'
+      }
+      return payload
+    }
+  }
+  const tokenValidator = new TokenValidator('')
+  return tokenValidator
+}
+
 const makeUpdateAccountValidator = () => {
   class UpdateAccountValidatorSpy {
     async validate (formData = {}) {
@@ -61,15 +79,22 @@ const makeUpdateAccountUseCaseWithError = () => {
 const makeSut = () => {
   const updateAccountUseCase = makeUpdateAccountUseCase()
   const updateAccountValidator = makeUpdateAccountValidator()
+  const tokenValidator = makeTokenValidator()
   const sut = new UpdateAccountRouter({
     updateAccountUseCase,
-    updateAccountValidator
+    updateAccountValidator,
+    tokenValidator
   })
   return {
     sut,
     updateAccountUseCase,
-    updateAccountValidator
+    updateAccountValidator,
+    tokenValidator
   }
+}
+
+const httpHeaders = {
+  authorization: 'any_token'
 }
 
 const updateAccountForm = {
@@ -82,33 +107,36 @@ const updateAccountForm = {
 describe('UpdateAccount Router', () => {
   test('Should call UpdateAccountValidator with correct values', async () => {
     const { sut, updateAccountValidator } = makeSut()
-    const httpResquest = {
+    const httpRequest = {
+      headers: httpHeaders,
       body: updateAccountForm
     }
-    await sut.route(httpResquest)
+    await sut.route(httpRequest)
     expect(updateAccountValidator.formData).toEqual(updateAccountForm)
   })
 
   test('Should call UpdateAccountUserCase with correct values', async () => {
     const { sut, updateAccountUseCase } = makeSut()
-    const httpResquest = {
+    const httpRequest = {
+      headers: httpHeaders,
       body: updateAccountForm
     }
-    await sut.route(httpResquest)
+    await sut.route(httpRequest)
     expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
   })
 
   test('Should return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
-    const httpResquest = {
+    const httpRequest = {
+      headers: httpHeaders,
       body: Object.assign(
         {}, updateAccountForm,
         { firstName: 'Jane' }
       )
     }
-    const httpResponse = await sut.route(httpResquest)
+    const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
-    expect(httpResponse.body.result).toEqual(httpResquest.body)
+    expect(httpResponse.body.result).toEqual(httpRequest.body)
   })
 
   test('Should return 400 if any field is not provided', async () => {
@@ -116,6 +144,7 @@ describe('UpdateAccount Router', () => {
     const fields = Object.keys(updateAccountForm)
     for (const field of fields) {
       const httpRequest = {
+        headers: httpHeaders,
         body: Object.assign({}, updateAccountForm, { [field]: undefined })
       }
       const httpResponse = await sut.route(httpRequest)
@@ -128,7 +157,8 @@ describe('UpdateAccount Router', () => {
   })
 
   test('Should return 400 if email already exists', async () => {
-    const httpResquest = {
+    const httpRequest = {
+      headers: httpHeaders,
       body: updateAccountForm
     }
     const { sut, updateAccountUseCase } = makeSut()
@@ -139,7 +169,7 @@ describe('UpdateAccount Router', () => {
           { email: `${updateAccountForm.email} already exists` }
         )
       })
-    const httpResponse = await sut.route(httpResquest)
+    const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual({
       message: 'Erro ao cadastrar',
@@ -157,7 +187,18 @@ describe('UpdateAccount Router', () => {
   test('Should return 500 if httpRequest has no body', async () => {
     const { sut } = makeSut()
     const httpRequest = {
+      headers: httpHeaders,
       body: undefined
+    }
+    const httpResponse = await sut.route(httpRequest)
+    expect(httpResponse.body.message).toBe(new ServerError().message)
+  })
+
+  test('Should return 500 if httpRequest has no authorization header', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      headers: undefined,
+      body: updateAccountForm
     }
     const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.body.message).toBe(new ServerError().message)
@@ -180,10 +221,11 @@ describe('UpdateAccount Router', () => {
       })
     ]
     for (const sut of suts) {
-      const httpResquest = {
+      const httpRequest = {
+        headers: httpHeaders,
         body: updateAccountForm
       }
-      const httpResponse = await sut.route(httpResquest)
+      const httpResponse = await sut.route(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
       expect(httpResponse.body.message).toBe(new ServerError().message)
     }
@@ -203,10 +245,11 @@ describe('UpdateAccount Router', () => {
       })
     ]
     for (const sut of suts) {
-      const httpResquest = {
+      const httpRequest = {
+        headers: httpHeaders,
         body: updateAccountForm
       }
-      const httpResponse = await sut.route(httpResquest)
+      const httpResponse = await sut.route(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
       expect(httpResponse.body.message).toBe(new ServerError().message)
     }
