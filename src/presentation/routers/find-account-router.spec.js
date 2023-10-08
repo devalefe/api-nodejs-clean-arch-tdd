@@ -18,13 +18,20 @@ class FindAccountRouter {
   }
 }
 
+const makeSut = () => {
+  const sut = new FindAccountRouter()
+  return {
+    sut
+  }
+}
+
 const httpHeaders = {
   authorization: 'valid_token'
 }
 
 describe('FindAccount Router', () => {
   test('Should return 200 if find an account successfuly', async () => {
-    const sut = new FindAccountRouter()
+    const { sut } = makeSut()
     const httpRequest = {
       headers: httpHeaders
     }
@@ -33,7 +40,7 @@ describe('FindAccount Router', () => {
   })
 
   test('Should return 401 if no token is provided', async () => {
-    const sut = new FindAccountRouter()
+    const { sut } = makeSut()
     const httpRequest = {
       headers: undefined
     }
@@ -42,7 +49,7 @@ describe('FindAccount Router', () => {
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
-    const sut = new FindAccountRouter()
+    const { sut } = makeSut()
     const httpResponse = await sut.route()
     expect(httpResponse.statusCode).toBe(500)
   })
