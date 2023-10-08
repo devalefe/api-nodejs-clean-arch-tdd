@@ -60,6 +60,15 @@ const httpHeaders = {
 }
 
 describe('FindAccount Router', () => {
+  test('Should call TokenValidator with correct token', async () => {
+    const { sut, tokenValidator } = makeSut()
+    const httpRequest = {
+      headers: httpHeaders
+    }
+    await sut.route(httpRequest)
+    expect(tokenValidator.token).toEqual(httpRequest.headers.authorization)
+  })
+
   test('Should return 200 if find an account successfuly', async () => {
     const { sut } = makeSut()
     const httpRequest = {
