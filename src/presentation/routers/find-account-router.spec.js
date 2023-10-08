@@ -1,8 +1,16 @@
+const { MissingParamError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 class FindAccountRouter {
   async route (httpRequest) {
-    return HttpResponse.ok('Sucesso ao buscar conta')
+    try {
+      if (!httpRequest) {
+        throw new MissingParamError('httpRequest')
+      }
+      return HttpResponse.ok('Sucesso ao buscar conta')
+    } catch (error) {
+      return HttpResponse.serverError()
+    }
   }
 }
 
@@ -18,5 +26,11 @@ describe('FindAccount Router', () => {
     }
     const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
+  })
+
+  test('Should return 500 if no httpRequest is provided', async () => {
+    const sut = new FindAccountRouter()
+    const httpResponse = await sut.route()
+    expect(httpResponse.statusCode).toBe(500)
   })
 })
