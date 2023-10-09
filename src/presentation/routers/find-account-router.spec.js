@@ -54,13 +54,13 @@ const makeTokenValidator = () => {
 
     async validate (token) {
       this.token = token
-      const payload = {
-        id: 'valid_id'
-      }
-      return payload
+      return this.payload
     }
   }
   const tokenValidator = new TokenValidator('')
+  tokenValidator.payload = {
+    id: 'valid_id'
+  }
   return tokenValidator
 }
 
