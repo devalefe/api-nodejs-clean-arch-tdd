@@ -171,11 +171,18 @@ describe('FindAccount Router', () => {
 
   test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
+    const tokenValidator = makeTokenValidator()
+    const findAccountUseCase = makeFindAccountUseCase()
     const suts = [
       new FindAccountRouter(),
       new FindAccountRouter({}),
       new FindAccountRouter({
-        tokenValidator: invalid
+        tokenValidator: invalid,
+        findAccountUseCase
+      }),
+      new FindAccountRouter({
+        tokenValidator,
+        findAccountUseCase: invalid
       })
     ]
     for (const sut of suts) {
