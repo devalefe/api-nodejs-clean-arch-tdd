@@ -4,8 +4,10 @@ const HttpResponse = require('../helpers/http-response')
 
 class FindAccountRouter {
   constructor ({
+    findAccountUseCase,
     tokenValidator
   } = {}) {
+    this.findAccountUseCase = findAccountUseCase
     this.tokenValidator = tokenValidator
   }
 
@@ -15,8 +17,12 @@ class FindAccountRouter {
       if (!headers || !headers.authorization) {
         throw new MissingParamError('token')
       }
-      await this.tokenValidator.validate(headers.authorization)
-      return HttpResponse.ok('Sucesso ao buscar conta')
+      const { id } = await this.tokenValidator.validate(headers.authorization)
+      const account = await this.findAccountUseCase.find(id)
+      return HttpResponse.ok({
+        message: 'Sucesso ao buscar conta',
+        account
+      })
     } catch (error) {
       if (error.name === 'MissingParamError') {
         return HttpResponse.unauthorizedError()
@@ -24,6 +30,20 @@ class FindAccountRouter {
       return HttpResponse.serverError()
     }
   }
+}
+
+const makeFindAccountUseCase = () => {
+  class FindAccountUseCaseStub {
+    async find (accountId) {
+      this.accountId = accountId
+      return {
+        id: this.accountId
+      }
+    }
+  }
+  const findAccountUseCaseStub = new FindAccountUseCaseStub()
+  findAccountUseCaseStub.accountId = 'valid_id'
+  return findAccountUseCaseStub
 }
 
 const makeTokenValidator = () => {
@@ -45,13 +65,16 @@ const makeTokenValidator = () => {
 }
 
 const makeSut = () => {
+  const findAccountUseCase = makeFindAccountUseCase()
   const tokenValidator = makeTokenValidator()
   const sut = new FindAccountRouter({
+    findAccountUseCase,
     tokenValidator
   })
   return {
     sut,
-    tokenValidator
+    tokenValidator,
+    findAccountUseCase
   }
 }
 
@@ -76,6 +99,7 @@ describe('FindAccount Router', () => {
     }
     const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body.account.id).toBe('valid_id')
   })
 
   test('Should return 401 if no token is provided', async () => {
