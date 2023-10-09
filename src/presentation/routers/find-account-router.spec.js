@@ -25,7 +25,9 @@ class FindAccountRouter {
       })
     } catch (error) {
       if (error.name === 'MissingParamError') {
-        return HttpResponse.unauthorizedError()
+        return HttpResponse.badRequest({
+          message: 'Usuário não autenticado'
+        })
       }
       return HttpResponse.serverError()
     }
@@ -102,13 +104,14 @@ describe('FindAccount Router', () => {
     expect(httpResponse.body.account.id).toBe('valid_id')
   })
 
-  test('Should return 401 if no token is provided', async () => {
+  test('Should return 400 if no token is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       headers: undefined
     }
     const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.statusCode).toBe(401)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body.message).toBe('Usuário não autenticado')
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
