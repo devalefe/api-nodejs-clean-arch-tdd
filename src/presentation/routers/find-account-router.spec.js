@@ -68,6 +68,16 @@ const makeFindAccountUseCase = () => {
   return findAccountUseCaseStub
 }
 
+const makeFindAccountUseCaseWithError = () => {
+  class FindAccountUseCaseStub {
+    async find (accountId) {
+      throw new Error()
+    }
+  }
+  const findAccountUseCaseStub = new FindAccountUseCaseStub()
+  return findAccountUseCaseStub
+}
+
 const makeTokenValidator = () => {
   class TokenValidator {
     constructor (secret) {
@@ -83,6 +93,16 @@ const makeTokenValidator = () => {
   tokenValidator.payload = {
     id: 'valid_id'
   }
+  return tokenValidator
+}
+
+const makeTokenValidatorWithError = () => {
+  class TokenValidator {
+    async validate (token) {
+      throw new Error()
+    }
+  }
+  const tokenValidator = new TokenValidator()
   return tokenValidator
 }
 
@@ -183,6 +203,29 @@ describe('FindAccount Router', () => {
       new FindAccountRouter({
         tokenValidator,
         findAccountUseCase: invalid
+      })
+    ]
+    for (const sut of suts) {
+      const httpRequest = {
+        headers: httpHeaders
+      }
+      const httpResponse = await sut.route(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body.message).toBe(new ServerError().message)
+    }
+  })
+
+  test('Should return 500 if any dependency throws', async () => {
+    const tokenValidator = makeTokenValidator()
+    const findAccountUseCase = makeFindAccountUseCase()
+    const suts = [
+      new FindAccountRouter({
+        tokenValidator: makeTokenValidatorWithError(),
+        findAccountUseCase
+      }),
+      new FindAccountRouter({
+        tokenValidator,
+        findAccountUseCase: makeFindAccountUseCaseWithError()
       })
     ]
     for (const sut of suts) {
