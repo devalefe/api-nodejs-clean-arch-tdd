@@ -1,6 +1,6 @@
-const MissingParamError = require('../../utils/errors/missing-param-error')
-const UpdateAccessTokenRepository = require('./update-access-token-repository')
-const MongoHelper = require('../helpers/mongo-connection-helper')
+const MissingParamError = require('../../../utils/errors/missing-param-error')
+const UpdateAccessTokenRepository = require('./update-access-token')
+const MongoHelper = require('../../helpers/mongo-connection-helper')
 let userModel, userId
 
 describe('UpdateAccessToken Repository', () => {

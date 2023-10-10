@@ -1,6 +1,6 @@
-const UpdateAccountRepository = require('./update-account-repository')
-const MongoHelper = require('../helpers/mongo-connection-helper')
-const { MissingParamError } = require('../../utils/errors')
+const UpdateAccountRepository = require('./update')
+const MongoHelper = require('../../helpers/mongo-connection-helper')
+const { MissingParamError } = require('../../../utils/errors')
 let userModel, accountId
 
 const accountData = {

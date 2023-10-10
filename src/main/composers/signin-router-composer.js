@@ -3,8 +3,8 @@ const SignInRouter = require('../../presentation/routers/signin-router')
 const EmailValidator = require('../../utils/validators/email-validator')
 const TokenGenerator = require('../../utils/helpers/token-generator')
 const Encrypter = require('../../utils/helpers/encrypter')
-const LoadUserByEmailRepository = require('../../infra/repositories/load-user-by-email-repository')
-const UpdateAccessTokenRepository = require('../../infra/repositories/update-access-token-repository')
+const LoadUserByEmailRepository = require('../../infra/repositories/account/load-by-email')
+const UpdateAccessTokenRepository = require('../../infra/repositories/account/update-access-token')
 const { tokenSecret } = require('../config/env')
 
 module.exports = class SignInRouterComposer {

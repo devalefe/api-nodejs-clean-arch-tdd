@@ -1,9 +1,9 @@
 const UpdateAccountUseCase = require('../../domain/account/usecases/update')
 const UpdateAccountValidator = require('../../utils/validators/update-account-validator')
 const TokenValidator = require('../../utils/helpers/token-validator')
-const UpdateAccountRouter = require('../../presentation/routers/update-account-router')
-const LoadUserByEmailRepository = require('../../infra/repositories/load-user-by-email-repository')
-const UpdateAccountRepository = require('../../infra/repositories/update-account-repository')
+const UpdateAccountRouter = require('../../presentation/routers/account/update')
+const LoadUserByEmailRepository = require('../../infra/repositories/account/load-by-email')
+const UpdateAccountRepository = require('../../infra/repositories/account/update')
 const { tokenSecret } = require('../config/env')
 
 module.exports = class UpdateAccountRouterComposer {
