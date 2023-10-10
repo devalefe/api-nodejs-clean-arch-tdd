@@ -1,7 +1,7 @@
 const request = require('supertest')
 const app = require('../../config/app')
-const MongoHelper = require('../../../infrastructure/helpers/mongo-connection-helper')
-const TokenGenerator = require('../../../utils/helpers/token-generator')
+const MongoHelper = require('../../../modules/@shared/infrastructure/helpers/mongo-connection-helper')
+const TokenGenerator = require('../../../modules/@shared/utils/helpers/token-generator')
 const { tokenSecret } = require('../../config/env')
 let userModel, authToken
 

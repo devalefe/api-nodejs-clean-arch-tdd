@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../../../../utils/errors')
+const { MissingParamError } = require('../../../@shared/utils/errors')
 
 class SignInUseCase {
   constructor ({

@@ -1,6 +1,6 @@
-const { MissingParamError } = require('../../../../utils/errors')
-const MongoHelper = require('../../../../infrastructure/helpers/mongo-connection-helper')
-const parseId = require('../../../../infrastructure/helpers/mongo-id-parser-helper')
+const { MissingParamError } = require('../../../@shared/utils/errors')
+const MongoHelper = require('../../../@shared/infrastructure/helpers/mongo-connection-helper')
+const parseId = require('../../../@shared/infrastructure/helpers/mongo-id-parser-helper')
 
 module.exports = class LoadUserByIdRepository {
   async load (id) {

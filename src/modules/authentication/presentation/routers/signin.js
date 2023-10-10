@@ -1,5 +1,5 @@
-const HttpResponse = require('../../../../presentation/helpers/http-response')
-const { InvalidParamError, MissingParamError } = require('../../../../utils/errors')
+const HttpResponse = require('../../../@shared/presentation/helpers/http-response')
+const { InvalidParamError, MissingParamError } = require('../../../@shared/utils/errors')
 
 module.exports = class SignInRouter {
   constructor ({ signInUseCase, emailValidator } = {}) {

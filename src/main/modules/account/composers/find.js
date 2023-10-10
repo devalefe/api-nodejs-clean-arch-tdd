@@ -1,7 +1,7 @@
 const FindAccountUseCase = require('../../../../modules/account/domain/usecases/find')
 const FindAccountRouter = require('../../../../modules/account/presentation/routers/find')
 const LoadUserByIdRepository = require('../../../../modules/account/infrastructure/repositories/find')
-const TokenValidator = require('../../../../utils/helpers/token-validator')
+const TokenValidator = require('../../../../modules/@shared/utils/helpers/token-validator')
 const { tokenSecret } = require('../../../config/env')
 
 module.exports = class FindAccountRouterComposer {

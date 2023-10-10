@@ -1,6 +1,6 @@
-const MissingParamError = require('../../../../utils/errors/missing-param-error')
-const MongoHelper = require('../../../../infrastructure/helpers/mongo-connection-helper')
-const parseId = require('../../../../infrastructure/helpers/mongo-id-parser-helper')
+const { MissingParamError } = require('../../../../modules/@shared/utils/errors')
+const MongoHelper = require('../../../../modules/@shared/infrastructure/helpers/mongo-connection-helper')
+const parseId = require('../../../../modules/@shared/infrastructure/helpers/mongo-id-parser-helper')
 
 module.exports = class UpdateAccessTokenRepository {
   async update (userId, accessToken) {

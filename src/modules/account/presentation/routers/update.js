@@ -1,5 +1,5 @@
-const { MissingParamError } = require('../../../../utils/errors')
-const HttpResponse = require('../../../../presentation/helpers/http-response')
+const { MissingParamError } = require('../../../../modules/@shared/utils/errors')
+const HttpResponse = require('../../../../modules/@shared/presentation/helpers/http-response')
 
 module.exports = class UpdateAccountRouter {
   constructor ({

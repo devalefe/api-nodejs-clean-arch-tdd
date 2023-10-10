@@ -1,9 +1,9 @@
 const SignInUseCase = require('../../../../modules/authentication/domain/usecases/signin')
 const SignInRouter = require('../../../../modules/authentication/presentation/routers/signin')
-const EmailValidator = require('../../../../utils/validators/email-validator')
-const TokenGenerator = require('../../../../utils/helpers/token-generator')
-const Encrypter = require('../../../../utils/helpers/encrypter')
-const LoadUserByEmailRepository = require('../../../../infrastructure/repositories/account/load-by-email')
+const EmailValidator = require('../../../../modules/@shared/utils/validators/email-validator')
+const TokenGenerator = require('../../../../modules/@shared/utils/helpers/token-generator')
+const Encrypter = require('../../../../modules/@shared/utils/helpers/encrypter')
+const LoadUserByEmailRepository = require('../../../../modules/@shared/infrastructure/repositories/account/load-by-email')
 const UpdateAccessTokenRepository = require('../../../../modules/authentication/infrastructure/repositories/update-access-token')
 const { tokenSecret } = require('../../../config/env')
 

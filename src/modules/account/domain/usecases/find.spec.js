@@ -1,5 +1,5 @@
-const { MissingParamError } = require('../../../../utils/errors')
 const FindAccountUseCase = require('./find')
+const { MissingParamError } = require('../../../@shared/utils/errors')
 
 const accountFounded = {
   id: 'valid_id',

@@ -1,5 +1,5 @@
-const { ServerError } = require('../../../../presentation/errors')
-const { InvalidParamError } = require('../../../../utils/errors')
+const { ServerError } = require('../../../@shared/presentation/errors')
+const { InvalidParamError } = require('../../../@shared/utils/errors')
 const SignUpRouter = require('./signup')
 
 const makeSignUpUseCase = () => {

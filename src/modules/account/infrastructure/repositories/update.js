@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb')
-const { MissingParamError } = require('../../../../utils/errors')
-const MongoHelper = require('../../../../infrastructure/helpers/mongo-connection-helper')
+const { MissingParamError } = require('../../../@shared/utils/errors')
+const MongoHelper = require('../../../@shared/infrastructure/helpers/mongo-connection-helper')
 
 module.exports = class UpdateAccountRepository {
   async update (accountId, accountData) {

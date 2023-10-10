@@ -1,5 +1,5 @@
-const { MissingParamError, InvalidParamError } = require('../../../../utils/errors')
 const SignUpUseCase = require('./signup')
+const { MissingParamError, InvalidParamError } = require('../../../@shared/utils/errors')
 
 const signUpForm = {
   firstName: 'John',

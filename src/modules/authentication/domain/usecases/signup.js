@@ -1,4 +1,4 @@
-const { MissingParamError, InvalidParamError } = require('../../../../utils/errors')
+const { MissingParamError, InvalidParamError } = require('../../../@shared/utils/errors')
 
 module.exports = class SignUpUseCase {
   constructor ({

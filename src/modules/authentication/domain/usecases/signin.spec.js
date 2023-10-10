@@ -1,5 +1,5 @@
-const { MissingParamError } = require('../../../../utils/errors')
 const SignInUseCase = require('./signin')
+const { MissingParamError } = require('../../../@shared/utils/errors')
 
 const makeEncrypter = () => {
   class EncrypterSpy {

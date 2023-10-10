@@ -1,5 +1,5 @@
-const { MissingParamError, InvalidParamError } = require('../../../../utils/errors')
 const UpdateAccountUseCase = require('./update')
+const { MissingParamError, InvalidParamError } = require('../../../@shared/utils/errors')
 
 const accountId = 'valid_id'
 
