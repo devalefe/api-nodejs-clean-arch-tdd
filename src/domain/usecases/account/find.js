@@ -2,16 +2,16 @@ const { MissingParamError } = require('../../../utils/errors')
 
 module.exports = class FindAccountUseCase {
   constructor ({
-    findAccountByIdRepository
+    loadUserByIdRepository
   } = {}) {
-    this.findAccountByIdRepository = findAccountByIdRepository
+    this.loadUserByIdRepository = loadUserByIdRepository
   }
 
   async find (accountId) {
     if (!accountId) {
       throw new MissingParamError('accountId')
     }
-    const account = await this.findAccountByIdRepository.find(accountId)
+    const account = await this.loadUserByIdRepository.load(accountId)
     return account
   }
 }
