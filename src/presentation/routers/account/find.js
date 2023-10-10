@@ -27,18 +27,14 @@ module.exports = class FindAccountRouter {
       })
     } catch (error) {
       if (
-        error.name === 'MissingParamError' &&
-        error.message !== 'headers'
-      ) {
-        return HttpResponse.badRequest({
-          message: 'Usuário não autenticado'
-        })
-      }
-      if (
         error.name === 'JsonWebTokenError' ||
-        error.name === 'TokenExpiredError'
+        error.name === 'TokenExpiredError' ||
+        error.message === 'token'
       ) {
         return HttpResponse.unauthorizedError()
+      }
+      if (error.name === 'MissingParamError') {
+        return HttpResponse.badRequest(error)
       }
       return HttpResponse.serverError()
     }

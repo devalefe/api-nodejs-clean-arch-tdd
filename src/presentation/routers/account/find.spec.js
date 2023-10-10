@@ -114,7 +114,7 @@ describe('FindAccount Router', () => {
     expect(httpResponse.body.account.id).toBe('valid_id')
   })
 
-  test('Should return 400 if no token is provided', async () => {
+  test('Should return 401 if no token is provided', async () => {
     const { sut } = makeSut()
     const invalidHeaders = [
       {},
@@ -125,8 +125,7 @@ describe('FindAccount Router', () => {
         headers: invalidheader
       }
       const httpResponse = await sut.route(httpRequest)
-      expect(httpResponse.statusCode).toBe(400)
-      expect(httpResponse.body.message).toBe('Usuário não autenticado')
+      expect(httpResponse.statusCode).toBe(401)
     }
   })
 
@@ -156,7 +155,7 @@ describe('FindAccount Router', () => {
     expect(httpResponse.statusCode).toBe(500)
   })
 
-  test('Should return 500 if httpRequest has no headers', async () => {
+  test('Should return 400 if httpRequest has no headers', async () => {
     const { sut } = makeSut()
     const invalidHttpRequests = [
       {},
@@ -164,7 +163,7 @@ describe('FindAccount Router', () => {
     ]
     for (const invalidHttpRequest of invalidHttpRequests) {
       const httpResponse = await sut.route(invalidHttpRequest)
-      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.statusCode).toBe(400)
     }
   })
 
