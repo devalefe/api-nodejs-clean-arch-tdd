@@ -17,8 +17,13 @@ describe('LoadUserByID Repository', () => {
     await MongoHelper.disconnect()
   })
 
-  test('Should return an user if user is found', async () => {
+  const makeSut = () => {
     const sut = new LoadUserByIdRepository()
+    return sut
+  }
+
+  test('Should return an user if user is found', async () => {
+    const sut = makeSut()
     const { insertedId: id } = await userModel.insertOne({
       name: 'Any Name',
       email: 'valid_email@mail.com',
@@ -34,13 +39,13 @@ describe('LoadUserByID Repository', () => {
   })
 
   test('Should return null if no user is found', async () => {
-    const sut = new LoadUserByIdRepository()
+    const sut = makeSut()
     const user = await sut.load('invalid_id')
     expect(user).toBeNull()
   })
 
   test('Should throw if no id is provided', async () => {
-    const sut = new LoadUserByIdRepository()
+    const sut = makeSut()
     const promise = sut.load()
     await expect(promise).rejects.toThrow(new MissingParamError('id'))
   })
