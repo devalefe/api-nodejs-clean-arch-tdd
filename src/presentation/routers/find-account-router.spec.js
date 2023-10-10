@@ -13,8 +13,11 @@ class FindAccountRouter {
 
   async route (httpRequest) {
     try {
-      const headers = httpRequest.headers
-      if (!headers || !headers.authorization) {
+      const { headers } = httpRequest
+      if (!headers) {
+        throw new MissingParamError('headers')
+      }
+      if (!headers.authorization) {
         throw new MissingParamError('token')
       }
       const { id } = await this.tokenValidator.validate(headers.authorization)
@@ -24,7 +27,10 @@ class FindAccountRouter {
         account
       })
     } catch (error) {
-      if (error.name === 'MissingParamError') {
+      if (
+        error.name === 'MissingParamError' &&
+        error.message !== 'headers'
+      ) {
         return HttpResponse.badRequest({
           message: 'Usuário não autenticado'
         })
@@ -155,12 +161,18 @@ describe('FindAccount Router', () => {
 
   test('Should return 400 if no token is provided', async () => {
     const { sut } = makeSut()
-    const httpRequest = {
-      headers: undefined
+    const invalidHeaders = [
+      {},
+      { authorization: undefined }
+    ]
+    for (const invalidheader of invalidHeaders) {
+      const httpRequest = {
+        headers: invalidheader
+      }
+      const httpResponse = await sut.route(httpRequest)
+      expect(httpResponse.statusCode).toBe(400)
+      expect(httpResponse.body.message).toBe('Usuário não autenticado')
     }
-    const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body.message).toBe('Usuário não autenticado')
   })
 
   test('Should return 401 if invalid token is provided', async () => {
@@ -187,6 +199,18 @@ describe('FindAccount Router', () => {
     const { sut } = makeSut()
     const httpResponse = await sut.route()
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should return 500 if httpRequest has no headers', async () => {
+    const { sut } = makeSut()
+    const invalidHttpRequests = [
+      {},
+      { headers: undefined }
+    ]
+    for (const invalidHttpRequest of invalidHttpRequests) {
+      const httpResponse = await sut.route(invalidHttpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+    }
   })
 
   test('Should return 500 if invalid dependencies are provided', async () => {
