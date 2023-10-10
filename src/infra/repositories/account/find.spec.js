@@ -7,6 +7,7 @@ class LoadUserByIdRepository {
     if (!id) {
       throw new MissingParamError('id')
     }
+    return null
   }
 }
 
@@ -22,6 +23,12 @@ describe('LoadUserByID Repository', () => {
 
   afterAll(async () => {
     await MongoHelper.disconnect()
+  })
+
+  test('Should return null if no user is found', async () => {
+    const sut = new LoadUserByIdRepository()
+    const user = await sut.load('invalid_id')
+    expect(user).toBeNull()
   })
 
   test('Should throw if no id is provided', async () => {
