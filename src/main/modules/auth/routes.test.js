@@ -1,7 +1,7 @@
 const request = require('supertest')
 const app = require('../../config/app')
 const bcrypt = require('bcrypt')
-const MongoHelper = require('../../../infra/helpers/mongo-connection-helper')
+const MongoHelper = require('../../../infrastructure/helpers/mongo-connection-helper')
 let userModel
 
 const signUpForm = {

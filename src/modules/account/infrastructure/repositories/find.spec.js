@@ -1,5 +1,5 @@
-const { MissingParamError } = require('../../../utils/errors')
-const MongoHelper = require('../../helpers/mongo-connection-helper')
+const { MissingParamError } = require('../../../../utils/errors')
+const MongoHelper = require('../../../../infrastructure/helpers/mongo-connection-helper')
 const LoadUserByIdRepository = require('./find')
 let userModel
 

@@ -1,5 +1,5 @@
-const MissingParamError = require('../../../utils/errors/missing-param-error')
-const MongoHelper = require('../../helpers/mongo-connection-helper')
+const MissingParamError = require('../../../../utils/errors/missing-param-error')
+const MongoHelper = require('../../../../infrastructure/helpers/mongo-connection-helper')
 
 module.exports = class CreateAccountRepository {
   async create (accountData) {

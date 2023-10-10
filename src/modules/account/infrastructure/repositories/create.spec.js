@@ -1,6 +1,6 @@
-const MissingParamError = require('../../../utils/errors/missing-param-error')
+const MissingParamError = require('../../../../utils/errors/missing-param-error')
 const CreateAccountRepository = require('./create')
-const MongoHelper = require('../../helpers/mongo-connection-helper')
+const MongoHelper = require('../../../../infrastructure/helpers/mongo-connection-helper')
 let userModel
 
 const accountData = {

@@ -3,9 +3,9 @@ const SignUpRouter = require('../../../../modules/auth/presentation/routers/sign
 const SignUpValidator = require('../../../../utils/validators/signup-validator')
 const TokenGenerator = require('../../../../utils/helpers/token-generator')
 const Encrypter = require('../../../../utils/helpers/encrypter')
-const LoadUserByEmailRepository = require('../../../../infra/repositories/account/load-by-email')
-const CreateAccountRepository = require('../../../../infra/repositories/account/create')
-const UpdateAccessTokenRepository = require('../../../../infra/repositories/account/update-access-token')
+const CreateAccountRepository = require('../../../../modules/account/infrastructure/repositories/create')
+const LoadUserByEmailRepository = require('../../../../infrastructure/repositories/account/load-by-email')
+const UpdateAccessTokenRepository = require('../../../../infrastructure/repositories/account/update-access-token')
 const { tokenSecret, hashSalt } = require('../../../config/env')
 
 module.exports = class SignUpRouterComposer {
