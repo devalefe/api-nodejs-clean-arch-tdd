@@ -1,6 +1,6 @@
-const { ObjectId } = require('mongodb')
 const MissingParamError = require('../../../utils/errors/missing-param-error')
 const MongoHelper = require('../../helpers/mongo-connection-helper')
+const parseId = require('../../helpers/mongo-id-parser-helper')
 
 module.exports = class UpdateAccessTokenRepository {
   async update (userId, accessToken) {
@@ -12,7 +12,7 @@ module.exports = class UpdateAccessTokenRepository {
     }
     const userModel = await MongoHelper.getCollection('users')
     await userModel.updateOne({
-      _id: new ObjectId(userId)
+      _id: parseId(userId)
     }, {
       $set: {
         accessToken
