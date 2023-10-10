@@ -1,8 +1,8 @@
-const FindAccountUseCase = require('../../domain/usecases/account/find')
-const LoadUserByIdRepository = require('../../infra/repositories/account/find')
-const FindAccountRouter = require('../../presentation/routers/account/find')
-const TokenValidator = require('../../utils/helpers/token-validator')
-const { tokenSecret } = require('../config/env')
+const FindAccountUseCase = require('../../../domain/usecases/account/find')
+const LoadUserByIdRepository = require('../../../infra/repositories/account/find')
+const FindAccountRouter = require('../../../presentation/routers/account/find')
+const TokenValidator = require('../../../utils/helpers/token-validator')
+const { tokenSecret } = require('../../config/env')
 
 module.exports = class FindAccountRouterComposer {
   static compose () {

@@ -1,6 +1,6 @@
 const ExpressRouterAdapter = require('../adapters/express-router-adapter')
-const FindAccountRouterComposer = require('../composers/find-account-router-composer')
-const UpdateAccountRouterComposer = require('../composers/update-account-router-composer')
+const FindAccountRouterComposer = require('../composers/account/find')
+const UpdateAccountRouterComposer = require('../composers/account/update')
 
 module.exports = (router) => {
   const findAccountRouter = FindAccountRouterComposer.compose()

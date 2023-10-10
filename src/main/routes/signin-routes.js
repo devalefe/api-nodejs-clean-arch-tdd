@@ -1,5 +1,5 @@
 const ExpressRouterAdapter = require('../adapters/express-router-adapter')
-const SignInRouterComposer = require('../composers/signin-router-composer')
+const SignInRouterComposer = require('../composers/auth/signin')
 
 module.exports = (router) => {
   const signInRouter = SignInRouterComposer.compose()
