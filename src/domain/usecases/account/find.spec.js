@@ -9,35 +9,35 @@ const accountFounded = {
   email: 'example@mail.com'
 }
 
-const makeFindAccountByIdRepository = () => {
-  class FindAccountByIdRepositorySpy {
-    async find (accountId) {
+const makeLoadUserByIdRepository = () => {
+  class LoadUserByIdRepositorySpy {
+    async load (accountId) {
       this.accountId = accountId
       return accountFounded
     }
   }
-  const findAccountByIdRepositorySpy = new FindAccountByIdRepositorySpy()
-  return findAccountByIdRepositorySpy
+  const loadUserByIdRepositorySpy = new LoadUserByIdRepositorySpy()
+  return loadUserByIdRepositorySpy
 }
 
-const makeFindAccountByIdRepositoryWithError = () => {
-  class FindAccountByIdRepositorySpy {
-    async find (accountId) {
+const makeLoadUserByIdRepositoryWithError = () => {
+  class LoadUserByIdRepositorySpy {
+    async load (accountId) {
       throw new Error()
     }
   }
-  const findAccountByIdRepositorySpy = new FindAccountByIdRepositorySpy()
-  return findAccountByIdRepositorySpy
+  const loadUserByIdRepositorySpy = new LoadUserByIdRepositorySpy()
+  return loadUserByIdRepositorySpy
 }
 
 const makeSut = () => {
-  const findAccountByIdRepository = makeFindAccountByIdRepository()
+  const loadUserByIdRepository = makeLoadUserByIdRepository()
   const sut = new FindAccountUseCase({
-    findAccountByIdRepository
+    loadUserByIdRepository
   })
   return {
     sut,
-    findAccountByIdRepository
+    loadUserByIdRepository
   }
 }
 
@@ -49,8 +49,8 @@ describe('ViewAccount Use Case', () => {
   })
 
   test('Should return null if no account is founded', async () => {
-    const { sut, findAccountByIdRepository } = makeSut()
-    jest.spyOn(findAccountByIdRepository, 'find').mockReturnValueOnce(new Promise(resolve => resolve(null)))
+    const { sut, loadUserByIdRepository } = makeSut()
+    jest.spyOn(loadUserByIdRepository, 'load').mockReturnValueOnce(new Promise(resolve => resolve(null)))
     const account = await sut.find('valid_id')
     expect(account).toBeNull()
   })
@@ -74,7 +74,7 @@ describe('ViewAccount Use Case', () => {
       new FindAccountUseCase(),
       new FindAccountUseCase({}),
       new FindAccountUseCase({
-        findAccountByIdRepository: invalid
+        loadUserByIdRepository: invalid
       })
     ]
     for (const sut of suts) {
@@ -86,7 +86,7 @@ describe('ViewAccount Use Case', () => {
   test('Should throw if any dependency throws', async () => {
     const suts = [
       new FindAccountUseCase({
-        findAccountByIdRepository: makeFindAccountByIdRepositoryWithError()
+        loadUserByIdRepository: makeLoadUserByIdRepositoryWithError()
       })
     ]
     for (const sut of suts) {
