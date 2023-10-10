@@ -5,7 +5,7 @@ const TokenGenerator = require('../../../../utils/helpers/token-generator')
 const Encrypter = require('../../../../utils/helpers/encrypter')
 const CreateAccountRepository = require('../../../../modules/account/infrastructure/repositories/create')
 const LoadUserByEmailRepository = require('../../../../infrastructure/repositories/account/load-by-email')
-const UpdateAccessTokenRepository = require('../../../../infrastructure/repositories/account/update-access-token')
+const UpdateAccessTokenRepository = require('../../../../modules/auth/infrastructure/repositories/update-access-token')
 const { tokenSecret, hashSalt } = require('../../../config/env')
 
 module.exports = class SignUpRouterComposer {
