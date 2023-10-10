@@ -6,9 +6,9 @@ const { tokenSecret } = require('../config/env')
 
 module.exports = class FindAccountRouterComposer {
   static compose () {
-    const findAccountByIdRepository = new LoadUserByIdRepository()
+    const loadUserByIdRepository = new LoadUserByIdRepository()
     const findAccountUseCase = new FindAccountUseCase({
-      findAccountByIdRepository
+      loadUserByIdRepository
     })
     const tokenValidator = new TokenValidator(tokenSecret)
     const findAccountRouter = new FindAccountRouter({
