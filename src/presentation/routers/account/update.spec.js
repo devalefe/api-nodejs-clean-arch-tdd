@@ -1,6 +1,6 @@
-const { ServerError, UnauthorizedError } = require('../errors')
-const { InvalidParamError, MissingParamError } = require('../../utils/errors')
-const UpdateAccountRouter = require('./update-account-router')
+const { ServerError, UnauthorizedError } = require('../../errors')
+const { InvalidParamError, MissingParamError } = require('../../../utils/errors')
+const UpdateAccountRouter = require('./update')
 
 class JsonWebTokenErrorStub extends Error {
   constructor (message) {

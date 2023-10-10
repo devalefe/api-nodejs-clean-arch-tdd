@@ -1,5 +1,5 @@
-const { ServerError, UnauthorizedError } = require('../errors')
-const FindAccountRouter = require('./find-account-router')
+const { ServerError, UnauthorizedError } = require('../../errors')
+const FindAccountRouter = require('./find')
 
 class JsonWebTokenErrorStub extends Error {
   constructor (message) {
