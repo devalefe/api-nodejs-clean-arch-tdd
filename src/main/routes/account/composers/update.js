@@ -1,10 +1,10 @@
-const UpdateAccountUseCase = require('../../../domain/usecases/account/update')
-const UpdateAccountValidator = require('../../../utils/validators/update-account-validator')
-const TokenValidator = require('../../../utils/helpers/token-validator')
-const UpdateAccountRouter = require('../../../presentation/routers/account/update')
-const LoadUserByEmailRepository = require('../../../infra/repositories/account/load-by-email')
-const UpdateAccountRepository = require('../../../infra/repositories/account/update')
-const { tokenSecret } = require('../../config/env')
+const UpdateAccountUseCase = require('../../../../domain/usecases/account/update')
+const UpdateAccountValidator = require('../../../../utils/validators/update-account-validator')
+const TokenValidator = require('../../../../utils/helpers/token-validator')
+const UpdateAccountRouter = require('../../../../presentation/routers/account/update')
+const LoadUserByEmailRepository = require('../../../../infra/repositories/account/load-by-email')
+const UpdateAccountRepository = require('../../../../infra/repositories/account/update')
+const { tokenSecret } = require('../../../config/env')
 
 module.exports = class UpdateAccountRouterComposer {
   static compose () {

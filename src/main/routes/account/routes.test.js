@@ -1,8 +1,8 @@
 const request = require('supertest')
-const app = require('../config/app')
-const MongoHelper = require('../../infra/helpers/mongo-connection-helper')
-const TokenGenerator = require('../../utils/helpers/token-generator')
-const { tokenSecret } = require('../config/env')
+const app = require('../../config/app')
+const MongoHelper = require('../../../infra/helpers/mongo-connection-helper')
+const TokenGenerator = require('../../../utils/helpers/token-generator')
+const { tokenSecret } = require('../../config/env')
 let userModel, authToken
 
 const updateAccountForm = {
