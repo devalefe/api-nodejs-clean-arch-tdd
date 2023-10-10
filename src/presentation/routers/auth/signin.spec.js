@@ -1,6 +1,6 @@
-const SignInRouter = require('./signin-router')
-const { UnauthorizedError, ServerError } = require('../errors')
-const { MissingParamError, InvalidParamError } = require('../../utils/errors')
+const SignInRouter = require('./signin')
+const { UnauthorizedError, ServerError } = require('../../errors')
+const { MissingParamError, InvalidParamError } = require('../../../utils/errors')
 
 const makeSut = () => {
   const signInUseCaseSpy = makeSignInUseCase()

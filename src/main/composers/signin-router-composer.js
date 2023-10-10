@@ -1,5 +1,5 @@
-const SignInUseCase = require('../../domain/signin-usecase')
-const SignInRouter = require('../../presentation/routers/signin-router')
+const SignInUseCase = require('../../domain/usecases/auth/signin')
+const SignInRouter = require('../../presentation/routers/auth/signin')
 const EmailValidator = require('../../utils/validators/email-validator')
 const TokenGenerator = require('../../utils/helpers/token-generator')
 const Encrypter = require('../../utils/helpers/encrypter')

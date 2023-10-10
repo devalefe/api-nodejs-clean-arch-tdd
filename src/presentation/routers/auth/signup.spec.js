@@ -1,6 +1,6 @@
-const { ServerError } = require('../errors')
-const { InvalidParamError } = require('../../utils/errors')
-const SignUpRouter = require('./signup-router')
+const { ServerError } = require('../../errors')
+const { InvalidParamError } = require('../../../utils/errors')
+const SignUpRouter = require('./signup')
 
 const makeSignUpUseCase = () => {
   class SignUpUseCaseSpy {
