@@ -97,5 +97,13 @@ describe('Account Routes', () => {
         .send()
       expect(response.statusCode).toBe(401)
     })
+
+    test('Should return 200 if valid credentials are provided', async () => {
+      const response = await request(app)
+        .get('/api/account')
+        .auth(authToken, { type: 'bearer' })
+        .send()
+      expect(response.statusCode).toBe(200)
+    })
   })
 })
