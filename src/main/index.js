@@ -1,4 +1,4 @@
-const MongoHelper = require('../infra/helpers/mongo-connection-helper')
+const MongoHelper = require('../modules/@shared/infrastructure/helpers/mongo-connection-helper')
 const { mongoUrl, dbName, port } = require('./config/env')
 
 MongoHelper.connect(mongoUrl, dbName)
