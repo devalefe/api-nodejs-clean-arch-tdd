@@ -1,49 +1,40 @@
-const { MissingParamError } = require('../../../../modules/@shared/utils/errors')
+const { MissingParamError, InvalidParamError } = require('../../../../modules/@shared/utils/errors')
 const HttpResponse = require('../../../../modules/@shared/presentation/helpers/http-response')
 
 module.exports = class UpdateAccountRouter {
   constructor ({
     updateAccountUseCase,
-    updateAccountValidator,
-    tokenValidator
+    updateAccountValidator
   } = {}) {
     this.updateAccountUseCase = updateAccountUseCase
     this.updateAccountValidator = updateAccountValidator
-    this.tokenValidator = tokenValidator
   }
 
   async route (httpRequest) {
     try {
-      const headers = httpRequest.headers
-      if (!headers || !headers.authorization) {
-        throw new MissingParamError('token')
+      const { user } = httpRequest
+      if (!user) {
+        throw new MissingParamError('user')
       }
-      const formData = httpRequest.body
-      if (!formData) {
-        throw new MissingParamError('body')
+      if (!user.id) {
+        throw new MissingParamError('id')
       }
-      const { id } = await this.tokenValidator.validate(headers.authorization)
-      const accountData = await this.updateAccountValidator.validate(formData)
-      const updatedAccount = await this.updateAccountUseCase.update(id, accountData)
+      const { body } = httpRequest
+      if (!body) {
+        throw new InvalidParamError('body')
+      }
+      const accountData = await this.updateAccountValidator.validate(body)
+      const updatedAccount = await this.updateAccountUseCase.update(user.id, accountData)
       return HttpResponse.ok({
         message: 'Sucesso ao atualizar',
         result: updatedAccount
       })
     } catch (error) {
-      if (
-        error.name === 'InvalidParamError' ||
-        error.name === 'MissingParamError'
-      ) {
+      if (error.name === 'InvalidParamError') {
         return HttpResponse.badRequest({
           message: error.message,
           detail: error.detail
         })
-      }
-      if (
-        error.name === 'JsonWebTokenError' ||
-        error.name === 'TokenExpiredError'
-      ) {
-        return HttpResponse.unauthorizedError()
       }
       return HttpResponse.serverError()
     }

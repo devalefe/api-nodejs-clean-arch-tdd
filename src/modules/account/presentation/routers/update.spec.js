@@ -1,52 +1,6 @@
 const UpdateAccountRouter = require('./update')
-const { ServerError, UnauthorizedError } = require('../../../@shared/presentation/errors')
+const { ServerError } = require('../../../@shared/presentation/errors')
 const { InvalidParamError, MissingParamError } = require('../../../@shared/utils/errors')
-
-class JsonWebTokenErrorStub extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'JsonWebTokenError'
-  }
-}
-
-class TokenExpiredErrorStub extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'TokenExpiredError'
-  }
-}
-
-const makeTokenValidator = () => {
-  class TokenValidator {
-    constructor (secret) {
-      this.secret = secret
-    }
-
-    async validate (token) {
-      this.token = token
-      const payload = {
-        id: 'valid_id'
-      }
-      return payload
-    }
-  }
-  const tokenValidator = new TokenValidator('')
-  return tokenValidator
-}
-
-const makeTokenValidatorWithError = () => {
-  class TokenValidator {
-    constructor (secret) {
-      this.secret = secret
-    }
-
-    async validate (token) {
-      throw new Error()
-    }
-  }
-  const tokenValidator = new TokenValidator('')
-  return tokenValidator
-}
 
 const makeUpdateAccountValidator = () => {
   class UpdateAccountValidatorSpy {
@@ -111,22 +65,15 @@ const makeUpdateAccountUseCaseWithError = () => {
 const makeSut = () => {
   const updateAccountUseCase = makeUpdateAccountUseCase()
   const updateAccountValidator = makeUpdateAccountValidator()
-  const tokenValidator = makeTokenValidator()
   const sut = new UpdateAccountRouter({
     updateAccountUseCase,
-    updateAccountValidator,
-    tokenValidator
+    updateAccountValidator
   })
   return {
     sut,
     updateAccountUseCase,
-    updateAccountValidator,
-    tokenValidator
+    updateAccountValidator
   }
-}
-
-const httpHeaders = {
-  authorization: 'valid_token'
 }
 
 const updateAccountForm = {
@@ -140,32 +87,28 @@ describe('UpdateAccount Router', () => {
   test('Should call UpdateAccountValidator with correct values', async () => {
     const { sut, updateAccountValidator } = makeSut()
     const httpRequest = {
-      headers: httpHeaders,
+      user: { id: 'valid_id' },
       body: updateAccountForm
     }
     await sut.route(httpRequest)
     expect(updateAccountValidator.formData).toEqual(updateAccountForm)
   })
 
-  test('Should call UpdateAccountUserCase with correct values', async () => {
-    const { sut, updateAccountUseCase, tokenValidator } = makeSut()
+  test('Should call UpdateAccountUseCase with correct values', async () => {
+    const { sut, updateAccountUseCase } = makeSut()
     const httpRequest = {
-      headers: httpHeaders,
+      user: { id: 'valid_id' },
       body: updateAccountForm
     }
-    jest.spyOn(tokenValidator, 'validate')
-      .mockReturnValueOnce(
-        new Promise(resolve => resolve({ id: 'any_id' }))
-      )
     await sut.route(httpRequest)
-    expect(updateAccountUseCase.accountId).toEqual('any_id')
+    expect(updateAccountUseCase.accountId).toEqual('valid_id')
     expect(updateAccountUseCase.accountData).toEqual(updateAccountForm)
   })
 
   test('Should return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
-      headers: httpHeaders,
+      user: { id: 'valid_id' },
       body: Object.assign(
         {}, updateAccountForm,
         { firstName: 'Jane' }
@@ -181,7 +124,7 @@ describe('UpdateAccount Router', () => {
     const fields = Object.keys(updateAccountForm)
     for (const field of fields) {
       const httpRequest = {
-        headers: httpHeaders,
+        user: { id: 'valid_id' },
         body: Object.assign({}, updateAccountForm, { [field]: undefined })
       }
       const httpResponse = await sut.route(httpRequest)
@@ -195,7 +138,7 @@ describe('UpdateAccount Router', () => {
 
   test('Should return 400 if email already exists', async () => {
     const httpRequest = {
-      headers: httpHeaders,
+      user: { id: 'valid_id' },
       body: updateAccountForm
     }
     const { sut, updateAccountUseCase } = makeSut()
@@ -214,25 +157,15 @@ describe('UpdateAccount Router', () => {
     })
   })
 
-  test('Should return 401 if invalid token is provided', async () => {
+  test('Should return 400 if httpRequest has no body', async () => {
+    const { sut } = makeSut()
     const httpRequest = {
-      headers: httpHeaders,
-      body: updateAccountForm
+      user: { id: 'valid_id' },
+      body: undefined
     }
-    const { sut, tokenValidator } = makeSut()
-    const stubs = [
-      new JsonWebTokenErrorStub(),
-      new TokenExpiredErrorStub()
-    ]
-    for (const stub of stubs) {
-      jest.spyOn(tokenValidator, 'validate')
-        .mockReturnValueOnce(new Promise((resolve, reject) =>
-          reject(stub)
-        ))
-      const httpResponse = await sut.route(httpRequest)
-      expect(httpResponse.statusCode).toBe(401)
-      expect(httpResponse.body.message).toBe(new UnauthorizedError().message)
-    }
+    const httpResponse = await sut.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body.message).toBe('body')
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
@@ -242,53 +175,42 @@ describe('UpdateAccount Router', () => {
     expect(httpResponse.body.message).toBe(new ServerError().message)
   })
 
-  test('Should return 400 if httpRequest has no body', async () => {
+  test('Should return 500 if invalid user is provided', async () => {
     const { sut } = makeSut()
-    const httpRequest = {
-      headers: httpHeaders,
-      body: undefined
+    const invalidParams = [
+      undefined,
+      { id: undefined }
+    ]
+    for (const param of invalidParams) {
+      const httpRequest = {
+        user: param,
+        body: undefined
+      }
+      const httpResponse = await sut.route(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body.message).toBe(new ServerError().message)
     }
-    const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.body.message).toBe(new MissingParamError('body').message)
-  })
-
-  test('Should return 400 if httpRequest has no authorization header', async () => {
-    const { sut } = makeSut()
-    const httpRequest = {
-      headers: undefined,
-      body: updateAccountForm
-    }
-    const httpResponse = await sut.route(httpRequest)
-    expect(httpResponse.body.message).toBe(new MissingParamError('token').message)
   })
 
   test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
     const updateAccountUseCase = makeUpdateAccountUseCase()
     const updateAccountValidator = makeUpdateAccountValidator()
-    const tokenValidator = makeTokenValidator()
     const suts = [
       new UpdateAccountRouter(),
       new UpdateAccountRouter({}),
       new UpdateAccountRouter({
         updateAccountUseCase: invalid,
-        updateAccountValidator,
-        tokenValidator
+        updateAccountValidator
       }),
       new UpdateAccountRouter({
         updateAccountUseCase,
-        updateAccountValidator: invalid,
-        tokenValidator
-      }),
-      new UpdateAccountRouter({
-        updateAccountUseCase,
-        updateAccountValidator,
-        tokenValidator: invalid
+        updateAccountValidator: invalid
       })
     ]
     for (const sut of suts) {
       const httpRequest = {
-        headers: httpHeaders,
+        user: { id: 'valid_id' },
         body: updateAccountForm
       }
       const httpResponse = await sut.route(httpRequest)
@@ -300,27 +222,19 @@ describe('UpdateAccount Router', () => {
   test('Should return 500 if any dependecy throws', async () => {
     const updateAccountUseCase = makeUpdateAccountUseCase()
     const updateAccountValidator = makeUpdateAccountValidator()
-    const tokenValidator = makeTokenValidator()
     const suts = [
       new UpdateAccountRouter({
         updateAccountUseCase: makeUpdateAccountUseCaseWithError(),
-        updateAccountValidator,
-        tokenValidator
+        updateAccountValidator
       }),
       new UpdateAccountRouter({
         updateAccountUseCase,
-        updateAccountValidator: makeUpdateAccountValidatorWithError(),
-        tokenValidator
-      }),
-      new UpdateAccountRouter({
-        updateAccountUseCase,
-        updateAccountValidator,
-        tokenValidator: makeTokenValidatorWithError()
+        updateAccountValidator: makeUpdateAccountValidatorWithError()
       })
     ]
     for (const sut of suts) {
       const httpRequest = {
-        headers: httpHeaders,
+        user: { id: 'valid_id' },
         body: updateAccountForm
       }
       const httpResponse = await sut.route(httpRequest)

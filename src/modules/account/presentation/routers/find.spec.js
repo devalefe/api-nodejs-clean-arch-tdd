@@ -1,19 +1,5 @@
 const FindAccountRouter = require('./find')
-const { ServerError, UnauthorizedError } = require('../../../@shared/presentation/errors')
-
-class JsonWebTokenErrorStub extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'JsonWebTokenError'
-  }
-}
-
-class TokenExpiredErrorStub extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'TokenExpiredError'
-  }
-}
+const { ServerError } = require('../../../@shared/presentation/errors')
 
 const makeFindAccountUseCase = () => {
   class FindAccountUseCaseStub {
@@ -39,113 +25,49 @@ const makeFindAccountUseCaseWithError = () => {
   return findAccountUseCaseStub
 }
 
-const makeTokenValidator = () => {
-  class TokenValidator {
-    constructor (secret) {
-      this.secret = secret
-    }
-
-    async validate (token) {
-      this.token = token
-      return this.payload
-    }
-  }
-  const tokenValidator = new TokenValidator('')
-  tokenValidator.payload = {
-    id: 'valid_id'
-  }
-  return tokenValidator
-}
-
-const makeTokenValidatorWithError = () => {
-  class TokenValidator {
-    async validate (token) {
-      throw new Error()
-    }
-  }
-  const tokenValidator = new TokenValidator()
-  return tokenValidator
-}
-
 const makeSut = () => {
   const findAccountUseCase = makeFindAccountUseCase()
-  const tokenValidator = makeTokenValidator()
   const sut = new FindAccountRouter({
-    findAccountUseCase,
-    tokenValidator
+    findAccountUseCase
   })
   return {
     sut,
-    tokenValidator,
     findAccountUseCase
   }
 }
 
-const httpHeaders = {
-  authorization: 'valid_token'
+const httpRequest = {
+  user: {
+    id: 'valid_id'
+  }
 }
 
 describe('FindAccount Router', () => {
-  test('Should call TokenValidator with correct token', async () => {
-    const { sut, tokenValidator } = makeSut()
-    const httpRequest = {
-      headers: httpHeaders
-    }
-    await sut.route(httpRequest)
-    expect(tokenValidator.token).toEqual(httpRequest.headers.authorization)
-  })
-
   test('Should call findAccountUseCase with correct id', async () => {
     const { sut, findAccountUseCase } = makeSut()
-    const httpRequest = {
-      headers: httpHeaders
-    }
     await sut.route(httpRequest)
     expect(findAccountUseCase.accountId).toEqual('valid_id')
   })
 
   test('Should return 200 if find an account successfuly', async () => {
     const { sut } = makeSut()
-    const httpRequest = {
-      headers: httpHeaders
-    }
     const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body.account.id).toBe('valid_id')
   })
 
-  test('Should return 401 if no token is provided', async () => {
+  test('Should return 500 if invalid user is provided', async () => {
     const { sut } = makeSut()
-    const invalidHeaders = [
+    const invalidParams = [
       {},
-      { authorization: undefined }
+      { id: undefined }
     ]
-    for (const invalidheader of invalidHeaders) {
+    for (const param of invalidParams) {
       const httpRequest = {
-        headers: invalidheader
+        user: param
       }
       const httpResponse = await sut.route(httpRequest)
-      expect(httpResponse.statusCode).toBe(401)
-    }
-  })
-
-  test('Should return 401 if invalid token is provided', async () => {
-    const httpRequest = {
-      headers: httpHeaders
-    }
-    const { sut, tokenValidator } = makeSut()
-    const stubs = [
-      new JsonWebTokenErrorStub(),
-      new TokenExpiredErrorStub()
-    ]
-    for (const stub of stubs) {
-      jest.spyOn(tokenValidator, 'validate')
-        .mockReturnValueOnce(new Promise((resolve, reject) =>
-          reject(stub)
-        ))
-      const httpResponse = await sut.route(httpRequest)
-      expect(httpResponse.statusCode).toBe(401)
-      expect(httpResponse.body.message).toBe(new UnauthorizedError().message)
+      expect(httpResponse.statusCode).toBe(500)
     }
   })
 
@@ -155,38 +77,28 @@ describe('FindAccount Router', () => {
     expect(httpResponse.statusCode).toBe(500)
   })
 
-  test('Should return 400 if httpRequest has no headers', async () => {
+  test('Should return 500 if httpRequest has no user', async () => {
     const { sut } = makeSut()
     const invalidHttpRequests = [
       {},
-      { headers: undefined }
+      { user: undefined }
     ]
     for (const invalidHttpRequest of invalidHttpRequests) {
       const httpResponse = await sut.route(invalidHttpRequest)
-      expect(httpResponse.statusCode).toBe(400)
+      expect(httpResponse.statusCode).toBe(500)
     }
   })
 
   test('Should return 500 if invalid dependencies are provided', async () => {
     const invalid = {}
-    const tokenValidator = makeTokenValidator()
-    const findAccountUseCase = makeFindAccountUseCase()
     const suts = [
       new FindAccountRouter(),
       new FindAccountRouter({}),
       new FindAccountRouter({
-        tokenValidator: invalid,
-        findAccountUseCase
-      }),
-      new FindAccountRouter({
-        tokenValidator,
         findAccountUseCase: invalid
       })
     ]
     for (const sut of suts) {
-      const httpRequest = {
-        headers: httpHeaders
-      }
       const httpResponse = await sut.route(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
       expect(httpResponse.body.message).toBe(new ServerError().message)
@@ -194,22 +106,12 @@ describe('FindAccount Router', () => {
   })
 
   test('Should return 500 if any dependency throws', async () => {
-    const tokenValidator = makeTokenValidator()
-    const findAccountUseCase = makeFindAccountUseCase()
     const suts = [
       new FindAccountRouter({
-        tokenValidator: makeTokenValidatorWithError(),
-        findAccountUseCase
-      }),
-      new FindAccountRouter({
-        tokenValidator,
         findAccountUseCase: makeFindAccountUseCaseWithError()
       })
     ]
     for (const sut of suts) {
-      const httpRequest = {
-        headers: httpHeaders
-      }
       const httpResponse = await sut.route(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
       expect(httpResponse.body.message).toBe(new ServerError().message)

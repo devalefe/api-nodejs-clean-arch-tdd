@@ -3,39 +3,26 @@ const { MissingParamError } = require('../../../@shared/utils/errors')
 
 module.exports = class FindAccountRouter {
   constructor ({
-    findAccountUseCase,
-    tokenValidator
+    findAccountUseCase
   } = {}) {
     this.findAccountUseCase = findAccountUseCase
-    this.tokenValidator = tokenValidator
   }
 
   async route (httpRequest) {
     try {
-      const { headers } = httpRequest
-      if (!headers) {
-        throw new MissingParamError('headers')
+      const { user } = httpRequest
+      if (!user) {
+        throw new MissingParamError('user')
       }
-      if (!headers.authorization) {
-        throw new MissingParamError('token')
+      if (!user.id) {
+        throw new MissingParamError('id')
       }
-      const { id } = await this.tokenValidator.validate(headers.authorization)
-      const account = await this.findAccountUseCase.find(id)
+      const account = await this.findAccountUseCase.find(user.id)
       return HttpResponse.ok({
         message: 'Sucesso ao buscar conta',
         account
       })
     } catch (error) {
-      if (
-        error.name === 'JsonWebTokenError' ||
-        error.name === 'TokenExpiredError' ||
-        error.message === 'token'
-      ) {
-        return HttpResponse.unauthorizedError()
-      }
-      if (error.name === 'MissingParamError') {
-        return HttpResponse.badRequest(error)
-      }
       return HttpResponse.serverError()
     }
   }
