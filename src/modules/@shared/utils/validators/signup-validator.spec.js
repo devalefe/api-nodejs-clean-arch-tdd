@@ -1,5 +1,5 @@
-const { InvalidParamError } = require('../errors/index')
 const SignUpValidator = require('./signup-validator')
+const { InvalidParamError } = require('../errors')
 
 const signUpForm = {
   firstName: 'John',

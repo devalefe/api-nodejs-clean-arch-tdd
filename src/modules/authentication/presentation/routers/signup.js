@@ -1,4 +1,4 @@
-const HttpResponse = require('../../../../modules/@shared/presentation/helpers/http-response')
+const HttpResponse = require('../../../@shared/presentation/helpers/http-response')
 
 module.exports = class SignUpRouter {
   constructor ({

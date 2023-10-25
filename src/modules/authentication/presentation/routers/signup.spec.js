@@ -1,6 +1,6 @@
+const SignUpRouter = require('./signup')
 const { ServerError } = require('../../../@shared/presentation/errors')
 const { InvalidParamError } = require('../../../@shared/utils/errors')
-const SignUpRouter = require('./signup')
 
 const makeSignUpUseCase = () => {
   class SignUpUseCaseSpy {

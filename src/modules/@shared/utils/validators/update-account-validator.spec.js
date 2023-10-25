@@ -1,5 +1,5 @@
-const { InvalidParamError } = require('../errors/index')
 const UpdateAccountValidator = require('./update-account-validator')
+const { InvalidParamError } = require('../errors')
 
 const updateAccountForm = {
   firstName: 'John',
