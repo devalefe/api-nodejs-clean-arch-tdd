@@ -1,6 +1,6 @@
-const { ObjectId } = require('mongodb')
 const { MissingParamError } = require('../../../@shared/utils/errors')
 const MongoHelper = require('../../../@shared/infrastructure/helpers/mongo-connection-helper')
+const parseId = require('../../../@shared/infrastructure/helpers/mongo-id-parser-helper')
 
 module.exports = class UpdateAccountRepository {
   async update (accountId, accountData) {
@@ -12,7 +12,7 @@ module.exports = class UpdateAccountRepository {
     }
     const accountModel = await MongoHelper.getCollection('users')
     const result = await accountModel.updateOne({
-      _id: new ObjectId(accountId)
+      _id: parseId(accountId)
     }, {
       $set: {
         firstName: accountData.firstName,
